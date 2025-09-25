@@ -66,7 +66,7 @@
           </label>
           <el-input
             v-model="apiBaseUrl"
-            placeholder="http://localhost:3099"
+            placeholder="https://quant.wufeng98.cn/api"
             @blur="handleApiUrlChange"
           />
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -114,7 +114,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
@@ -123,7 +123,8 @@ import api from '@/api'
 const { locale } = useI18n()
 const userStore = useUserStore()
 
-const apiBaseUrl = ref('http://localhost:3099')
+const apiBaseUrl = ref('https://quant.wufeng98.cn/api')
+// const apiBaseUrl = ref('http://localhost:3099')
 const testing = ref(false)
 const connectionStatus = ref('')
 
@@ -195,9 +196,4 @@ const testConnection = async () => {
     testing.value = false
   }
 }
-
-onMounted(() => {
-  // 初始化设置
-  apiBaseUrl.value = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3099'
-})
 </script>
