@@ -133,10 +133,11 @@
 
       <!-- 收益曲线图 -->
       <div v-if="backtest.status === 'completed'" class="card p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">收益曲线</h3>
-        <div class="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
-          图表组件待实现 (Chart.js/ECharts)
-        </div>
+        <ProfitChart 
+          :trades="trades" 
+          :initial-capital="parseFloat(backtest.initialCapital)"
+          :loading="loadingTrades"
+        />
       </div>
 
       <!-- 交易记录 -->
@@ -161,7 +162,7 @@
             <thead class="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  时间
+                  交易时间
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   类型
@@ -186,21 +187,21 @@
                   {{ formatTime(trade.timestamp) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span :class="getTradeTypeClass(trade.type)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                    {{ formatTradeType(trade.type) }}
+                  <span :class="getTradeTypeClass(trade.tradeType)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                    {{ formatTradeType(trade.tradeType) }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                   {{ formatCurrency(trade.price) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                  {{ trade.quantity }}
+                  {{ trade.amount }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                   {{ formatCurrency(trade.fee) }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm" :class="getReturnClass(trade.pnl)">
-                  {{ formatCurrency(trade.pnl) }}
+                <td class="px-6 py-4 whitespace-nowrap text-sm" :class="getReturnClass(parseFloat(trade.profit || '0'))">
+                  {{ formatCurrency(trade.profit || '0') }}
                 </td>
               </tr>
             </tbody>
@@ -242,7 +243,8 @@ import { formatTime, formatCurrency, formatPercent, formatBacktestStatus } from 
 import { ArrowLeft } from '@element-plus/icons-vue'
 import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
-import type { BacktestTrade } from '@/types'
+import ProfitChart from '@/components/Common/ProfitChart.vue'
+import type { Trade } from '@/types'
 
 const route = useRoute()
 const backtestStore = useBacktestStore()
@@ -251,7 +253,7 @@ const priceDataStore = usePriceDataStore()
 
 const loading = ref(true)
 const loadingTrades = ref(false)
-const trades = ref<BacktestTrade[]>([])
+const trades = ref<Trade[]>([])
 let statusCheckInterval: NodeJS.Timeout | null = null
 
 const backtest = computed(() => {
@@ -276,16 +278,8 @@ const getTradingPairSymbol = (pairId: number) => {
 
 // 获取时间框架名称
 const getTimeframeName = (timeframeId: number) => {
-  const timeframes = {
-    1: '1分钟',
-    5: '5分钟',
-    15: '15分钟',
-    30: '30分钟',
-    60: '1小时',
-    240: '4小时',
-    1440: '1天'
-  }
-  return timeframes[timeframeId as keyof typeof timeframes] || '未知时间框架'
+  const timeframe = priceDataStore.getTimeframeById(timeframeId)
+  return timeframe?.name || '未知时间框架'
 }
 
 const getStatusClass = (status: string) => {
@@ -324,7 +318,8 @@ const loadTrades = async () => {
   
   loadingTrades.value = true
   try {
-    trades.value = await backtestStore.fetchBacktestTrades(backtest.value.id!)
+    await backtestStore.fetchTrades(backtest.value.id!)
+    trades.value = backtestStore.currentTrades
   } catch (error) {
     console.error('加载交易记录失败:', error)
   } finally {
@@ -336,7 +331,7 @@ const checkStatus = async () => {
   if (!backtest.value || backtest.value.status !== 'running') return
   
   try {
-    await backtestStore.fetchBacktest(backtest.value.id!)
+    await backtestStore.fetchBacktestById(backtest.value.id!)
   } catch (error) {
     console.error('检查回测状态失败:', error)
   }
@@ -345,7 +340,14 @@ const checkStatus = async () => {
 onMounted(async () => {
   try {
     const id = Number(route.params.id)
-    await backtestStore.fetchBacktest(id)
+    
+    // 并行加载必要的数据
+    await Promise.all([
+      backtestStore.fetchBacktestById(id),
+      priceDataStore.fetchTimeframes(),
+      priceDataStore.fetchTradingPairs(),
+      strategyStore.fetchStrategies()
+    ])
     
     // 如果回测已完成，加载交易记录
     if (backtest.value?.status === 'completed') {

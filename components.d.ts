@@ -20,11 +20,13 @@ declare module 'vue' {
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElSelect: typeof import('element-plus/es')['ElSelect']
+    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     EmptyState: typeof import('./src/components/Common/EmptyState.vue')['default']
     LoadingSpinner: typeof import('./src/components/Common/LoadingSpinner.vue')['default']
     MainLayout: typeof import('./src/components/Layout/MainLayout.vue')['default']
+    ProfitChart: typeof import('./src/components/Common/ProfitChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

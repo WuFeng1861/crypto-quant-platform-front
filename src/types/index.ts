@@ -140,13 +140,21 @@ export interface BacktestCreateResponse {
 
 export interface Trade {
   id: number
-  timestamp: number
-  type: 'buy' | 'sell'
-  price: number
-  quantity: number
-  fee: number
-  pnl?: number
+  backtestId: number
+  timestamp: string
+  tradeType: 'buy' | 'sell'
+  price: string
+  amount: string
+  fee: string
+  profit?: string | null
+  profitRate?: string | null
+  balance: string
+  signalIndicatorId: number
+  createdAt: string
 }
+
+// 为了向后兼容，保留旧的接口名
+export interface BacktestTrade extends Trade {}
 
 export interface BacktestResult {
   id: number
