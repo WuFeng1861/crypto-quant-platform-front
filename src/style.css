@@ -1,9 +1,9 @@
+/* 引入主题样式 */
+@import './styles/theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* 引入主题样式 */
-@import './styles/theme.css';
 
 /* 自定义样式 */
 @layer base {

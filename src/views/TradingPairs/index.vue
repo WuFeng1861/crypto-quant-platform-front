@@ -3,10 +3,10 @@
     <!-- 页面头部 -->
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 class="page-title">
           {{ $t('tradingPairs.title') }}
         </h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="page-subtitle">
           管理交易对配置
         </p>
       </div>
@@ -33,7 +33,7 @@
     </div>
 
     <!-- 交易对列表 -->
-    <div class="card">
+    <div class="theme-card">
       <div v-if="priceDataStore.loading" class="p-6">
         <LoadingSpinner />
       </div>
@@ -48,13 +48,13 @@
       </div>
 
       <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-800">
+        <table class="theme-table">
+          <thead class="theme-table-header">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="theme-table-header-cell">
                 ID
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="theme-table-header-cell">
                 {{ $t('tradingPairs.symbol') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
