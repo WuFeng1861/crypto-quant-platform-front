@@ -4,15 +4,15 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="page-title">
-          {{ $t('indicators.create') }}
+          {{ t('indicators.create') }}
         </h1>
         <p class="page-subtitle">
-          创建新的技术指标
+          {{ t('indicators.createSubtitle') }}
         </p>
       </div>
       <router-link to="/indicators">
         <el-button :icon="ArrowLeft">
-          {{ $t('common.back') }}
+          {{ t('common.back') }}
         </el-button>
       </router-link>
     </div>
@@ -26,27 +26,27 @@
         label-width="120px"
         @submit.prevent="handleSubmit"
       >
-        <el-form-item :label="$t('indicators.name')" prop="name">
+        <el-form-item :label="t('indicators.name')" prop="name">
           <el-input
             v-model="form.name"
-            :placeholder="$t('indicators.name')"
+            :placeholder="t('indicators.name')"
             maxlength="100"
             show-word-limit
           />
         </el-form-item>
 
-        <el-form-item :label="$t('indicators.description')" prop="description">
+        <el-form-item :label="t('indicators.description')" prop="description">
           <el-input
             v-model="form.description"
             type="textarea"
-            :placeholder="$t('indicators.description')"
+            :placeholder="t('indicators.description')"
             :rows="3"
             maxlength="500"
             show-word-limit
           />
         </el-form-item>
 
-        <el-form-item :label="$t('indicators.calculationCode')" prop="calculationCode">
+        <el-form-item :label="t('indicators.calculationCode')" prop="calculationCode">
           <div class="w-full">
             <CodeEditor
               v-model="form.calculationCode"
@@ -56,7 +56,7 @@
           </div>
         </el-form-item>
 
-        <el-form-item :label="$t('indicators.parameters')">
+        <el-form-item :label="t('indicators.parameters')">
           <div class="w-full space-y-4">
             <div
               v-for="(parameter, index) in form.parameters"
@@ -65,7 +65,7 @@
             >
               <div class="flex items-center justify-between mb-4">
                 <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                  参数 {{ index + 1 }}
+                  {{ t('indicators.parameter') }} {{ index + 1 }}
                 </h4>
                 <el-button
                   size="small"
@@ -73,45 +73,45 @@
                   link
                   @click="removeParameter(index)"
                 >
-                  {{ $t('indicators.removeParameter') }}
+                  {{ t('indicators.removeParameter') }}
                 </el-button>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <el-form-item
                   :prop="`parameters.${index}.name`"
-                  :rules="[{ required: true, message: '请输入参数名称', trigger: 'blur' }]"
-                  label="参数名称"
+                  :rules="[{ required: true, message: t('validation.parameterNameRequired'), trigger: 'blur' }]"
+                  :label="t('indicators.parameterName')"
                 >
                   <el-input
                     v-model="parameter.name"
-                    placeholder="参数名称"
+                    :placeholder="t('indicators.parameterName')"
                   />
                 </el-form-item>
 
                 <el-form-item
                   :prop="`parameters.${index}.paramType`"
-                  :rules="[{ required: true, message: '请选择参数类型', trigger: 'change' }]"
-                  label="参数类型"
+                  :rules="[{ required: true, message: t('validation.parameterTypeRequired'), trigger: 'change' }]"
+                  :label="t('indicators.parameterType')"
                 >
-                  <el-select v-model="parameter.paramType" placeholder="选择类型">
-                    <el-option label="数字" value="number" />
-                    <el-option label="字符串" value="string" />
-                    <el-option label="布尔值" value="boolean" />
+                  <el-select v-model="parameter.paramType" :placeholder="t('common.selectType')">
+                    <el-option :label="t('common.number')" value="number" />
+                    <el-option :label="t('common.string')" value="string" />
+                    <el-option :label="t('common.boolean')" value="boolean" />
                   </el-select>
                 </el-form-item>
 
-                <el-form-item label="参数描述">
+                <el-form-item :label="t('indicators.parameterDescription')">
                   <el-input
                     v-model="parameter.description"
-                    placeholder="参数描述（可选）"
+                    :placeholder="t('indicators.parameterDescriptionOptional')"
                   />
                 </el-form-item>
 
-                <el-form-item label="默认值">
+                <el-form-item :label="t('indicators.defaultValue')">
                   <el-input
                     v-model="parameter.defaultValue"
-                    placeholder="默认值（可选）"
+                    :placeholder="t('indicators.defaultValueOptional')"
                   />
                 </el-form-item>
               </div>
@@ -123,7 +123,7 @@
               @click="addParameter"
               :icon="Plus"
             >
-              {{ $t('indicators.addParameter') }}
+              {{ t('indicators.addParameter') }}
             </el-button>
           </div>
         </el-form-item>
@@ -135,10 +135,10 @@
               @click="handleSubmit"
               :loading="loading"
             >
-              {{ $t('common.create') }}
+              {{ t('common.create') }}
             </el-button>
             <el-button @click="resetForm">
-              {{ $t('common.reset') }}
+              {{ t('common.reset') }}
             </el-button>
           </div>
         </el-form-item>
@@ -156,6 +156,9 @@ import { validationRules } from '@/utils/validation'
 import CodeEditor from '@/components/Common/CodeEditor.vue'
 import { ArrowLeft, Plus } from '@element-plus/icons-vue'
 import type { Indicator, IndicatorParameter } from '@/types'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const indicatorStore = useIndicatorStore()
@@ -175,8 +178,8 @@ const rules = {
   calculationCode: [validationRules.required()]
 }
 
-const calculationCodePlaceholder = `// 指标计算函数示例
-// 参数: priceData - 价格数据数组, parameters - 用户参数
+const calculationCodePlaceholder = `// ${t('indicators.calculationFunctionExample')}
+// ${t('indicators.calculationFunctionParams')}
 function calculate(priceData, parameters) {
   const period = parameters.period || 14;
   const result = [];
@@ -187,7 +190,7 @@ function calculate(priceData, parameters) {
       continue;
     }
     
-    // 计算简单移动平均线
+    // ${t('indicators.calculateSMA')}
     let sum = 0;
     for (let j = i - period + 1; j <= i; j++) {
       sum += priceData[j].closePrice;
@@ -224,10 +227,10 @@ const handleSubmit = async () => {
     loading.value = true
     
     await indicatorStore.createIndicator(form)
-    ElMessage.success('指标创建成功')
+    ElMessage.success(t('indicators.createSuccess'))
     router.push('/indicators')
   } catch (error) {
-    console.error('创建指标失败:', error)
+    console.error(`${t('indicators.createFailed')}:`, error)
   } finally {
     loading.value = false
   }

@@ -9,7 +9,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-              {{ $t('indicators.title') }}
+              {{ t('indicators.title') }}
             </p>
             <p class="text-2xl font-semibold text-gray-900 dark:text-white">
               {{ indicatorStore.indicators?.length || 0 }}
@@ -25,7 +25,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-              {{ $t('strategies.title') }}
+              {{ t('strategies.title') }}
             </p>
             <p class="text-2xl font-semibold text-gray-900 dark:text-white">
               {{ strategyStore.strategies?.length || 0 }}
@@ -41,7 +41,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-              {{ $t('backtest.title') }}
+              {{ t('backtest.title') }}
             </p>
             <p class="text-2xl font-semibold text-gray-900 dark:text-white">
               {{ backtestStore.backtests?.length || 0 }}
@@ -57,7 +57,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-              运行中回测
+              {{ t('dashboard.runningBacktests') }}
             </p>
             <p class="text-2xl font-semibold text-gray-900 dark:text-white">
               {{ backtestStore.runningBacktestsList?.length || 0 }}
@@ -70,7 +70,7 @@
     <!-- 快速操作 -->
     <div class="card p-6">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        快速操作
+        {{ t('dashboard.quickActions') }}
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <router-link
@@ -79,7 +79,7 @@
         >
           <Plus class="h-6 w-6 text-gray-400 group-hover:text-primary-500 mr-3" />
           <span class="text-gray-600 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400">
-            创建指标
+            {{ t('dashboard.createIndicator') }}
           </span>
         </router-link>
 
@@ -89,7 +89,7 @@
         >
           <Plus class="h-6 w-6 text-gray-400 group-hover:text-primary-500 mr-3" />
           <span class="text-gray-600 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400">
-            创建策略
+            {{ t('dashboard.createStrategy') }}
           </span>
         </router-link>
 
@@ -99,7 +99,7 @@
         >
           <Plus class="h-6 w-6 text-gray-400 group-hover:text-primary-500 mr-3" />
           <span class="text-gray-600 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400">
-            创建回测
+            {{ t('dashboard.createBacktest') }}
           </span>
         </router-link>
 
@@ -109,7 +109,7 @@
         >
           <Setting class="h-6 w-6 text-gray-400 group-hover:text-primary-500 mr-3" />
           <span class="text-gray-600 dark:text-gray-300 group-hover:text-primary-600 dark:group-hover:text-primary-400">
-            管理交易对
+            {{ t('dashboard.manageTradingPairs') }}
           </span>
         </router-link>
       </div>
@@ -119,13 +119,13 @@
     <div class="card p-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-          最近回测结果
+          {{ t('dashboard.recentBacktests') }}
         </h3>
         <router-link
           to="/backtest"
           class="text-primary-600 hover:text-primary-500 text-sm font-medium"
         >
-          查看全部
+          {{ t('dashboard.viewAllBacktests') }}
         </router-link>
       </div>
 
@@ -135,9 +135,9 @@
 
       <div v-else-if="recentBacktests.length === 0">
         <EmptyState
-          title="暂无回测记录"
-          description="开始创建您的第一个回测"
-          action-text="创建回测"
+          :title="t('dashboard.noBacktestTitle')"
+          :description="t('dashboard.noBacktestDescription')"
+          :action-text="t('dashboard.noBacktestAction')"
           @action="$router.push('/backtest/create')"
         />
       </div>
@@ -147,19 +147,19 @@
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                策略
+                {{ t('strategies.title') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                交易对
+                {{ t('tradingPairs.title') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                收益率
+                {{ t('dashboard.returnRate') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                状态
+                {{ t('common.status') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                创建时间
+                {{ t('common.createdAt') }}
               </th>
             </tr>
           </thead>
@@ -207,6 +207,9 @@ import {
   Plus,
   Setting
 } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const indicatorStore = useIndicatorStore()
 const strategyStore = useStrategyStore()
@@ -238,12 +241,12 @@ const getStatusClass = (status: string) => {
 
 const getStrategyName = (strategyId: number) => {
   const strategy = strategyStore.strategies?.find(s => s.id === strategyId)
-  return strategy?.name || `策略 #${strategyId}`
+  return strategy?.name || `${t('strategies.title')} #${strategyId}`
 }
 
 const getTradingPairSymbol = (pairId: number) => {
   const pair = priceDataStore.tradingPairs?.find(p => p.id === pairId)
-  return pair?.symbol || `交易对 #${pairId}`
+  return pair?.symbol || `${t('tradingPairs.title')} #${pairId}`
 }
 
 onMounted(async () => {

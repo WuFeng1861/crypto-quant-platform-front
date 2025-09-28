@@ -4,10 +4,10 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="page-title">
-          {{ strategy?.name || '策略详情' }}
+          {{ strategy?.name || $t('strategies.detailTitle') }}
         </h1>
         <p class="page-subtitle">
-          查看策略配置和使用情况
+          {{ $t('strategies.detailSubtitle') }}
         </p>
       </div>
       <div class="flex space-x-2">
@@ -18,7 +18,7 @@
         </router-link>
         <router-link to="/strategies">
           <el-button :icon="ArrowLeft">
-            返回列表
+            {{ $t('common.backToList') }}
           </el-button>
         </router-link>
       </div>
@@ -45,11 +45,11 @@
       <div class="theme-card p-6">
         <div class="flex items-center justify-between mb-4">
           <h3 class="section-title">
-            回测历史
+            {{ $t('backtest.history') }}
           </h3>
           <router-link :to="`/backtest/create?strategyId=${strategy.id}`">
             <el-button type="primary" size="small">
-              创建回测
+              {{ $t('backtest.create') }}
             </el-button>
           </router-link>
         </div>
@@ -60,8 +60,8 @@
 
         <div v-else-if="!backtests.length" class="text-center py-8">
           <EmptyState 
-            title="暂无回测记录" 
-            description="该策略还没有进行过回测"
+            title="{{ $t('backtest.noRecordsTitle') }}" 
+            description="{{ $t('backtest.noRecordsDescription') }}"
             :icon="null"
           />
         </div>
@@ -70,12 +70,12 @@
           <table class="theme-table">
             <thead class="theme-table-header">
               <tr>
-                <th class="theme-table-header-cell">交易对</th>
-                <th class="theme-table-header-cell">时间范围</th>
-                <th class="theme-table-header-cell">收益率</th>
-                <th class="theme-table-header-cell">状态</th>
-                <th class="theme-table-header-cell">创建时间</th>
-                <th class="theme-table-header-cell">操作</th>
+                <th class="theme-table-header-cell">{{ $t('backtest.pair') }}</th>
+                <th class="theme-table-header-cell">{{ $t('backtest.timeRange') }}</th>
+                <th class="theme-table-header-cell">{{ $t('backtest.profitRate') }}</th>
+                <th class="theme-table-header-cell">{{ $t('common.status') }}</th>
+                <th class="theme-table-header-cell">{{ $t('common.createTime') }}</th>
+                <th class="theme-table-header-cell">{{ $t('common.actions') }}</th>
               </tr>
             </thead>
             <tbody class="theme-table-body">
@@ -86,7 +86,7 @@
                 <td class="theme-table-cell">
                   <div class="text-sm">
                     <div>{{ formatDate(backtest.startTime) }}</div>
-                    <div class="text-gray-500 dark:text-gray-400">至 {{ formatDate(backtest.endTime) }}</div>
+                    <div class="text-gray-500 dark:text-gray-400">{{ $t('common.to') }} {{ formatDate(backtest.endTime) }}</div>
                   </div>
                 </td>
                 <td class="theme-table-cell">
@@ -105,7 +105,7 @@
                 <td class="theme-table-cell">
                   <router-link :to="`/backtest/${backtest.id}`">
                     <el-button type="primary" link size="small">
-                      查看详情
+                      {{ $t('common.viewDetails') }}
                     </el-button>
                   </router-link>
                 </td>
@@ -118,8 +118,8 @@
 
     <div v-else class="text-center py-12">
       <EmptyState 
-        title="策略不存在" 
-        description="找不到指定的策略，可能已被删除或ID错误"
+        title="{{ $t('strategies.notFoundTitle') }}" 
+        description="{{ $t('strategies.notFoundDescription') }}"
         :icon="null"
       />
     </div>
@@ -182,7 +182,7 @@ const getReturnRateClass = (rate: number) => {
 // 获取交易对符号
 const getTradingPairSymbol = (pairId: number) => {
   const pair = priceDataStore.tradingPairs?.find(p => p.id === pairId)
-  return pair?.symbol || `交易对 #${pairId}`
+  return pair?.symbol || `${t('common.tradingPair')} #${pairId}`
 }
 
 // 加载回测记录
@@ -194,8 +194,8 @@ const loadBacktests = async () => {
     await backtestStore.fetchBacktests()
     backtests.value = backtestStore.backtests.filter(b => b.strategyId === strategy.value!.id)
   } catch (error) {
-    console.error('加载回测记录失败:', error)
-    ElMessage.error('加载回测记录失败')
+    console.error(`${t('backtest.loadRecordsFailed')}:`, error)
+    ElMessage.error(t('backtest.loadRecordsFailed'))
   } finally {
     loadingBacktests.value = false
   }
@@ -221,8 +221,8 @@ const loadStrategy = async (id: number) => {
     strategy.value = strategyData
     return strategyData
   } catch (error) {
-    console.error('加载策略详情失败:', error)
-    ElMessage.error('加载策略详情失败')
+    console.error(`${t('strategies.loadDetailFailed')}:`, error)
+    ElMessage.error(t('strategies.loadDetailFailed'))
     throw error
   }
 }
@@ -231,7 +231,7 @@ onMounted(async () => {
   try {
     const id = Number(route.params.id)
     if (!id || isNaN(id)) {
-      ElMessage.error('无效的策略ID')
+      ElMessage.error(t('common.invalidStrategyId'))
       router.push('/strategies')
       return
     }
@@ -250,7 +250,7 @@ onMounted(async () => {
       await loadBacktests()
     }
   } catch (error) {
-    console.error('页面初始化失败:', error)
+    console.error(`${t('common.pageInitFailed')}:`, error)
   } finally {
     loading.value = false
   }

@@ -7,7 +7,7 @@
           {{ $t('tradingPairs.title') }}
         </h1>
         <p class="page-subtitle">
-          管理交易对配置
+          {{ $t('tradingPairs.subtitle') }}
         </p>
       </div>
       <el-button type="primary" :icon="Plus" @click="showCreateDialog = true">
@@ -40,9 +40,9 @@
 
       <div v-else-if="!filteredTradingPairs || filteredTradingPairs.length === 0" class="p-6">
         <EmptyState
-          title="暂无交易对"
-          description="开始创建您的第一个交易对"
-          action-text="创建交易对"
+          :title="$t('tradingPairs.noDataTitle')"
+          :description="$t('tradingPairs.noDataDescription')"
+          :action-text="$t('tradingPairs.noDataAction')"
           @action="showCreateDialog = true"
         />
       </div>
@@ -167,8 +167,10 @@ import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import type { TradingPair } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 const priceDataStore = usePriceDataStore()
+const { t: $t } = useI18n()
 
 const searchQuery = ref('')
 const showCreateDialog = ref(false)
@@ -210,7 +212,7 @@ const handleCreate = async () => {
     creating.value = true
     
     await priceDataStore.createTradingPair(form)
-    ElMessage.success('交易对创建成功')
+    ElMessage.success($t('tradingPairs.createSuccess'))
     showCreateDialog.value = false
     resetForm()
   } catch (error) {
@@ -223,20 +225,20 @@ const handleCreate = async () => {
 const handleDelete = async (pair: TradingPair) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除交易对 "${pair.symbol}" 吗？此操作不可撤销。`,
-      '确认删除',
+      $t('tradingPairs.deleteConfirm', { symbol: pair.symbol }),
+      $t('common.confirmDelete'),
       {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
+        confirmButtonText: $t('common.delete'),
+        cancelButtonText: $t('common.cancel'),
         type: 'warning'
       }
     )
     
     await priceDataStore.deleteTradingPair(pair.id)
-    ElMessage.success('交易对删除成功')
+    ElMessage.success($t('tradingPairs.deleteSuccess'))
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      ElMessage.error($t('tradingPairs.deleteFailed'))
     }
   }
 }

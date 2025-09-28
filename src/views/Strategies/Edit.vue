@@ -4,20 +4,20 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="page-title">
-          编辑策略
+          {{ $t('strategies.edit') }}
         </h1>
         <p class="page-subtitle">
-          修改策略配置和参数
+          {{ $t('common.editStrategyConfig') }}
         </p>
       </div>
       <div class="flex space-x-2">
         <router-link to="/strategies">
           <el-button :icon="ArrowLeft">
-            返回列表
+            {{ $t('common.backToList') }}
           </el-button>
         </router-link>
         <el-button @click="resetForm" :icon="Refresh">
-          重置
+          {{ $t('common.reset') }}
         </el-button>
       </div>
     </div>
@@ -50,10 +50,10 @@
               @click="handleSubmit"
               :loading="submitLoading"
             >
-              保存修改
+              {{ $t('common.saveChanges') }}
             </el-button>
             <el-button @click="resetForm">
-              重置表单
+              {{ $t('common.resetForm') }}
             </el-button>
           </div>
         </el-form-item>
@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, type FormInstance } from 'element-plus'
 import { useStrategyStore } from '@/stores/strategies'
 import { useIndicatorStore } from '@/stores/indicators'
@@ -78,6 +79,7 @@ import type { UpdateStrategyRequest } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
+const { t: $t } = useI18n()
 const strategyStore = useStrategyStore()
 const indicatorStore = useIndicatorStore()
 
@@ -111,7 +113,7 @@ const rules = {
         if (value === undefined || value === null || value === '') {
           callback() // 可选字段，允许为空
         } else if (value <= 100) {
-          callback(new Error('止盈比例必须大于100'))
+          callback(new Error($t('validation.takeProfitRatioError')))
         } else {
           callback()
         }
@@ -125,7 +127,7 @@ const rules = {
         if (value === undefined || value === null || value === '') {
           callback() // 可选字段，允许为空
         } else if (value <= 0 || value >= 100) {
-          callback(new Error('止损比例必须在0-100之间'))
+          callback(new Error($t('validation.stopLossRatioError')))
         } else {
           callback()
         }
@@ -141,7 +143,7 @@ const loadStrategy = async () => {
   loading.value = true
   try {
     const strategy = await strategyStore.fetchStrategyWithDetails(strategyId.value)
-    
+
     // 填充表单数据
     Object.assign(form, {
       name: strategy.name,
@@ -175,7 +177,7 @@ const loadStrategy = async () => {
       })) || []
     })
   } catch (error) {
-    ElMessage.error('加载策略失败')
+    ElMessage.error(`${$t('strategies.title')}${$t('common.loadFailed')}`)
     router.push('/strategies')
   } finally {
     loading.value = false
@@ -188,27 +190,27 @@ const resetForm = () => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
-    
+
     if (!form.indicators || form.indicators.length === 0) {
-      ElMessage.error('请至少添加一个指标')
+      ElMessage.error($t('common.atLeastOneIndicator'))
       return
     }
-    
+
     if (!form.conditions || form.conditions.length === 0) {
-      ElMessage.error('请至少添加一个交易条件')
+      ElMessage.error($t('common.atLeastOneCondition'))
       return
     }
-    
+
     submitLoading.value = true
     await strategyStore.updateStrategy(strategyId.value, form)
-    ElMessage.success('策略更新成功')
+    ElMessage.success(`${$t('strategies.title')}${$t('common.updateSuccess')}`);
     router.push('/strategies')
   } catch (error) {
-    console.error('更新策略失败:', error)
-    ElMessage.error('更新策略失败')
+    console.error(`${$t('strategies.edit')}${$t('common.updateFailed')}:`, error)
+    ElMessage.error(`${$t('strategies.edit')}${$t('common.updateFailed')}`)
   } finally {
     submitLoading.value = false
   }

@@ -1,11 +1,11 @@
 <template>
   <div class="card p-6">
     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-      参数配置
+      {{ $t('indicators.parameterSettings') }}
     </h3>
     
     <div v-if="!indicator.parameters?.length" class="text-center py-8">
-      <EmptyState message="该指标没有可配置的参数" />
+      <EmptyState :message="$t('indicator.noConfigurableParameters')" />
     </div>
     
     <div v-else class="space-y-4">
@@ -21,15 +21,15 @@
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <span class="text-gray-500 dark:text-gray-400">默认值:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ $t('common.defaultValue') }}:</span>
             <span class="ml-1 text-gray-900 dark:text-white">{{ param.defaultValue || '-' }}</span>
           </div>
           <div v-if="param.minValue !== undefined">
-            <span class="text-gray-500 dark:text-gray-400">最小值:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ $t('common.minValue') }}:</span>
             <span class="ml-1 text-gray-900 dark:text-white">{{ param.minValue }}</span>
           </div>
           <div v-if="param.maxValue !== undefined">
-            <span class="text-gray-500 dark:text-gray-400">最大值:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ $t('common.maxValue') }}:</span>
             <span class="ml-1 text-gray-900 dark:text-white">{{ param.maxValue }}</span>
           </div>
         </div>
@@ -45,10 +45,13 @@
 <script setup lang="ts">
 import EmptyState from '@/components/Common/EmptyState.vue'
 import type { Indicator } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   indicator: Indicator
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const { t: $t } = useI18n()
 </script>

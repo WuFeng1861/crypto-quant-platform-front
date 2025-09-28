@@ -1,13 +1,13 @@
 <template>
   <div v-if="backtest.status === 'completed'" class="theme-card p-6">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium theme-text-primary">交易记录</h3>
+      <h3 class="text-lg font-medium theme-text-primary">{{ $t('backtest.tradeRecords') }}</h3>
       <div class="flex items-center space-x-2">
         <span class="text-sm theme-text-secondary">
-          共 {{ trades.length }} 笔交易
+          {{ $t('backtest.totalTrades', { count: trades.length }) }}
         </span>
         <el-button @click="$emit('refresh')" :loading="loading" size="small">
-          {{ loading ? '加载中...' : '刷新' }}
+          {{ loading ? $t('common.loading') : $t('common.refresh') }}
         </el-button>
       </div>
     </div>
@@ -18,8 +18,8 @@
 
     <div v-else-if="!trades.length" class="text-center py-8">
       <EmptyState 
-        title="暂无交易记录" 
-        description="该回测还没有产生任何交易"
+        :title="$t('backtest.noTradeRecords')" 
+        :description="$t('backtest.noTradeRecordsDescription')"
         :icon="null"
       />
     </div>
@@ -28,18 +28,18 @@
       <table class="theme-table">
         <thead class="theme-table-header">
           <tr>
-            <th class="theme-table-header-cell">ID</th>
-            <th class="theme-table-header-cell">交易时间</th>
-            <th class="theme-table-header-cell">类型</th>
-            <th class="theme-table-header-cell">价格</th>
-            <th class="theme-table-header-cell">数量</th>
-            <th class="theme-table-header-cell">成交金额</th>
-            <th class="theme-table-header-cell">手续费</th>
-            <th class="theme-table-header-cell">盈亏金额</th>
-            <th class="theme-table-header-cell">盈亏率</th>
-            <th class="theme-table-header-cell">账户余额</th>
-            <th class="theme-table-header-cell">信号指标</th>
-            <th class="theme-table-header-cell">创建时间</th>
+            <th class="theme-table-header-cell">{{ $t('common.id') }}</th>
+            <th class="theme-table-header-cell">{{ $t('backtest.tradeTime') }}</th>
+            <th class="theme-table-header-cell">{{ $t('common.type') }}</th>
+            <th class="theme-table-header-cell">{{ $t('common.price') }}</th>
+            <th class="theme-table-header-cell">{{ $t('common.amount') }}</th>
+            <th class="theme-table-header-cell">{{ $t('backtest.tradeValue') }}</th>
+            <th class="theme-table-header-cell">{{ $t('backtest.fee') }}</th>
+            <th class="theme-table-header-cell">{{ $t('backtest.profitLossAmount') }}</th>
+            <th class="theme-table-header-cell">{{ $t('backtest.profitLossRate') }}</th>
+            <th class="theme-table-header-cell">{{ $t('backtest.accountBalance') }}</th>
+            <th class="theme-table-header-cell">{{ $t('backtest.signalIndicator') }}</th>
+            <th class="theme-table-header-cell">{{ $t('common.createdAt') }}</th>
           </tr>
         </thead>
         <tbody class="theme-table-body">
@@ -102,19 +102,19 @@
     <div v-if="trades.length > 0" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="text-center">
-          <div class="text-sm theme-text-secondary">买入次数</div>
+          <div class="text-sm theme-text-secondary">{{ $t('backtest.buyCount') }}</div>
           <div class="text-lg font-semibold theme-text-primary">{{ buyTradesCount }}</div>
         </div>
         <div class="text-center">
-          <div class="text-sm theme-text-secondary">卖出次数</div>
+          <div class="text-sm theme-text-secondary">{{ $t('backtest.sellCount') }}</div>
           <div class="text-lg font-semibold theme-text-primary">{{ sellTradesCount }}</div>
         </div>
         <div class="text-center">
-          <div class="text-sm theme-text-secondary">总手续费</div>
+          <div class="text-sm theme-text-secondary">{{ $t('backtest.totalFees') }}</div>
           <div class="text-lg font-semibold theme-text-primary">{{ formatCurrency(totalFees) }}</div>
         </div>
         <div class="text-center">
-          <div class="text-sm theme-text-secondary">净盈亏</div>
+          <div class="text-sm theme-text-secondary">{{ $t('backtest.netProfitLoss') }}</div>
           <div class="text-lg font-semibold" :class="getReturnClass(totalProfit)">
             {{ formatCurrency(totalProfit.toString()) }}
           </div>
@@ -130,6 +130,7 @@ import { formatTime, formatCurrency, formatPercent } from '@/utils/format'
 import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
 import type { BacktestResult, Trade } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   backtest: BacktestResult
@@ -141,6 +142,8 @@ const props = defineProps<Props>()
 defineEmits<{
   refresh: []
 }>()
+
+const { t: $t } = useI18n()
 
 // 格式化日期（只显示日期部分）
 const formatDate = (timestamp: string) => {
@@ -176,8 +179,8 @@ const getTradeTypeClass = (type: string) => {
 // 格式化交易类型
 const formatTradeType = (type: string) => {
   const types = {
-    buy: '买入',
-    sell: '卖出'
+    buy: $t('common.buy'),
+    sell: $t('common.sell')
   }
   return types[type as keyof typeof types] || type
 }

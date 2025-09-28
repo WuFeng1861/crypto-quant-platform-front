@@ -1,7 +1,7 @@
 <template>
   <div class="mb-6">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium theme-text-primary">交易条件</h3>
+      <h3 class="text-lg font-medium theme-text-primary">{{ $t('strategies.tradingConditions') }}</h3>
       <el-button type="primary" plain @click="addCondition" :icon="Plus">
         {{ $t('strategies.addCondition') }}
       </el-button>
@@ -9,17 +9,17 @@
 
     <!-- 条件逻辑说明 -->
     <div v-if="form.conditions.length > 1" class="mb-4 info-box info-box-blue">
-      <h4 class="info-box-title info-box-title-blue">条件逻辑说明</h4>
+      <h4 class="info-box-title info-box-title-blue">{{ $t('strategies.conditionLogicTitle') }}</h4>
       <p class="info-box-text info-box-text-blue mb-2">
-        • 同一分组内的条件使用 <strong>AND</strong> 逻辑（所有条件都必须满足）
+        • {{ $t('strategies.conditionLogicAnd') }}
       </p>
       <p class="info-box-text info-box-text-blue">
-        • 不同分组间使用 <strong>OR</strong> 逻辑（任一分组满足即可）
+        • {{ $t('strategies.conditionLogicOr') }}
       </p>
     </div>
 
-    <div v-if="form.conditions.length === 0" class="text-center py-8 theme-text-secondary">
-      暂未添加交易条件，请点击上方按钮添加
+    <div v-if="!form.conditions || form.conditions.length === 0" class="text-center py-8 theme-text-secondary">
+      {{ $t('strategies.noConditionsText') }}
     </div>
 
     <div v-else class="space-y-4">
@@ -30,8 +30,8 @@
       >
         <div class="flex items-center justify-between mb-4">
           <h4 class="text-sm font-medium theme-text-primary">
-            条件 {{ index + 1 }} (分组 {{ condition.group || 1 }})
-            <span v-if="condition.id" class="text-xs theme-text-secondary">(ID: {{ condition.id }})</span>
+            {{ $t('strategies.conditionNumber') }} {{ index + 1 }} ({{ $t('strategies.conditionGroup') }} {{ condition.group || 1 }})
+            <span v-if="'id' in condition && condition.id" class="text-xs theme-text-secondary">(ID: {{ condition.id }})</span>
           </h4>
           <el-button
             size="small"
@@ -39,38 +39,38 @@
             link
             @click="removeCondition(index)"
           >
-            移除
+            {{ $t('strategies.removeCondition') }}
           </el-button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <el-form-item label="条件类型">
-            <el-select v-model="condition.conditionType" placeholder="条件类型" class="w-full">
-              <el-option label="数值条件" value="value" />
-              <el-option label="交叉条件" value="crossover" />
-              <el-option label="自定义代码" value="custom" />
+          <el-form-item :label="$t('strategies.conditionType')">
+            <el-select v-model="condition.conditionType" :placeholder="$t('strategies.conditionType')" class="w-full">
+              <el-option :label="$t('strategies.conditionTypes.value')" value="value" />
+              <el-option :label="$t('strategies.conditionTypes.crossover')" value="crossover" />
+              <el-option :label="$t('strategies.conditionTypes.custom')" value="custom" />
             </el-select>
           </el-form-item>
 
-          <el-form-item label="执行动作">
-            <el-select v-model="condition.action" placeholder="选择动作" class="w-full">
-              <el-option label="买入" value="buy" />
-              <el-option label="卖出" value="sell" />
-              <el-option label="无操作" value="none" />
+          <el-form-item :label="$t('strategies.executeAction')">
+            <el-select v-model="condition.action" :placeholder="$t('strategies.selectAction')" class="w-full">
+              <el-option :label="$t('strategies.actions.buy')" value="buy" />
+              <el-option :label="$t('strategies.actions.sell')" value="sell" />
+              <el-option :label="$t('strategies.actions.none')" value="none" />
             </el-select>
           </el-form-item>
 
-          <el-form-item label="条件分组">
+          <el-form-item :label="$t('strategies.conditionGroupLabel')">
             <el-input-number 
               v-model="condition.group" 
               :min="1" 
               :max="10"
-              placeholder="分组编号"
+              :placeholder="$t('strategies.groupNumber')"
               class="w-full"
             />
           </el-form-item>
 
-          <el-form-item label="优先级">
+          <el-form-item :label="$t('strategies.priority')">
             <el-input-number 
               v-model="condition.priority" 
               :min="1" 
@@ -83,50 +83,50 @@
         <!-- 标准条件配置 - 只在非自定义代码模式下显示 -->
         <template v-if="condition.conditionType !== 'custom'">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <el-form-item label="指标索引">
-              <el-select v-model="condition.indicatorIndex" placeholder="选择指标" class="w-full">
+            <el-form-item :label="$t('strategies.indicatorIndex')">
+              <el-select v-model="condition.indicatorIndex" :placeholder="$t('strategies.selectIndicator')" class="w-full">
                 <el-option
                   v-for="(ind, idx) in form.indicators"
                   :key="idx"
-                  :label="`指标${idx + 1}`"
+                  :label="`${$t('strategies.selectIndicator')}${idx + 1}`"
                   :value="idx"
                 />
               </el-select>
             </el-form-item>
 
-            <el-form-item label="比较类型">
-              <el-select v-model="condition.comparisonType" placeholder="比较类型" class="w-full">
-                <el-option label="与指标比较" value="indicator" />
-                <el-option label="与常量比较" value="constant" />
+            <el-form-item :label="$t('strategies.comparisonType')">
+              <el-select v-model="condition.comparisonType" :placeholder="$t('strategies.comparisonType')" class="w-full">
+                <el-option :label="$t('strategies.comparisonTypes.indicator')" value="indicator" />
+                <el-option :label="$t('strategies.comparisonTypes.constant')" value="constant" />
               </el-select>
             </el-form-item>
 
-            <el-form-item label="操作符">
-              <el-select v-model="condition.operator" placeholder="选择操作符" class="w-full">
-                <el-option label="大于 >" value=">" />
-                <el-option label="小于 <" value="<" />
-                <el-option label="大于等于 >=" value=">=" />
-                <el-option label="小于等于 <=" value="<=" />
-                <el-option label="等于 ==" value="==" />
-                <el-option label="不等于 !=" value="!=" />
+            <el-form-item :label="$t('strategies.operator')">
+              <el-select v-model="condition.operator" :placeholder="$t('strategies.operator')" class="w-full">
+                <el-option :label="`${$t('strategies.operators.>')} >`" value=">" />
+                <el-option :label="`${$t('strategies.operators.<')} <`" value="<" />
+                <el-option :label="`${$t('strategies.operators.>=')} >=`" value=">=" />
+                <el-option :label="`${$t('strategies.operators.<=')} <=`" value="<=" />
+                <el-option :label="`${$t('strategies.operators.==')} ==`" value="==" />
+                <el-option :label="`${$t('strategies.operators.!=')} !=`" value="!=" />
               </el-select>
             </el-form-item>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <el-form-item v-if="condition.comparisonType === 'indicator'" label="比较指标">
-              <el-select v-model="condition.comparedIndicatorIndex" placeholder="选择指标" class="w-full">
+            <el-form-item v-if="condition.comparisonType === 'indicator'" :label="$t('strategies.comparedIndicator')">
+              <el-select v-model="condition.comparedIndicatorIndex" :placeholder="$t('strategies.selectIndicator')" class="w-full">
                 <el-option
                   v-for="(ind, idx) in form.indicators"
                   :key="idx"
-                  :label="`指标${idx + 1}`"
+                  :label="`${$t('strategies.selectIndicator')}${idx + 1}`"
                   :value="idx"
                 />
               </el-select>
             </el-form-item>
 
-            <el-form-item v-if="condition.comparisonType === 'constant'" label="常量值">
-              <el-input v-model="condition.constantValue" placeholder="输入常量值" />
+            <el-form-item v-if="condition.comparisonType === 'constant'" :label="$t('strategies.constantValue')">
+              <el-input v-model="condition.constantValue" :placeholder="$t('strategies.inputConstantValue')" />
             </el-form-item>
           </div>
         </template>
@@ -134,20 +134,20 @@
         <!-- 自定义代码配置 - 只在自定义代码模式下显示 -->
         <template v-if="condition.conditionType === 'custom'">
           <div class="mb-4 info-box info-box-yellow">
-            <h5 class="info-box-title info-box-title-yellow">自定义代码说明</h5>
+            <h5 class="info-box-title info-box-title-yellow">{{ $t('strategies.customCodeTitle') }}</h5>
             <p class="info-box-text info-box-text-yellow mb-1">
-              • 使用 JavaScript 编写自定义交易条件逻辑
+              • {{ $t('strategies.customCodeTip1') }}
             </p>
             <p class="info-box-text info-box-text-yellow mb-1">
-              • 可访问变量：indicators（指标数组）、price（当前价格）、volume（成交量）
+              • {{ $t('strategies.customCodeTip2') }}
             </p>
             <p class="info-box-text info-box-text-yellow">
-              • 返回 true 表示条件满足，false 表示条件不满足
+              • {{ $t('strategies.customCodeTip3') }}
             </p>
           </div>
 
           <div class="mt-4">
-            <el-form-item label="自定义代码" class="w-full">
+            <el-form-item :label="$t('strategies.customCodeLabel')" class="w-full">
               <CodeEditor
                 v-model="condition.customCode"
                 placeholder="// 示例：当 RSI 小于 30 且价格上涨时买入
@@ -210,10 +210,10 @@ const addCondition = () => {
   
   props.form.conditions.push({
     indicatorIndex: 0,
-    comparisonType: 'constant',
-    operator: '>',
-    conditionType: 'value',
-    action: 'buy',
+    comparisonType: 'constant' as const,
+    operator: '>' as const,
+    conditionType: 'value' as const,
+    action: 'buy' as const,
     priority: 1,
     group: 1,
     currentValuePath: '',
@@ -223,6 +223,8 @@ const addCondition = () => {
 }
 
 const removeCondition = (index: number) => {
-  props.form.conditions.splice(index, 1)
+  if (props.form.conditions) {
+    props.form.conditions.splice(index, 1)
+  }
 }
 </script>

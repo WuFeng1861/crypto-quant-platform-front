@@ -26,6 +26,9 @@ import {
 import VChart from 'vue-echarts'
 import type { Trade } from '@/types'
 import { formatCurrency, formatTime } from '@/utils/format'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 // 注册 ECharts 组件
 use([
@@ -92,7 +95,7 @@ const chartOption = computed(() => {
   if (!data.length) {
     return {
       title: {
-        text: '暂无数据',
+        text: $t('profitChart.noData'),
         left: 'center',
         top: 'center',
         textStyle: {
@@ -110,7 +113,7 @@ const chartOption = computed(() => {
   
   return {
     title: {
-      text: '收益曲线',
+      text: $t('profitChart.title'),
       left: 'left',
       textStyle: {
         color: '#374151',
@@ -135,16 +138,16 @@ const chartOption = computed(() => {
               ${formatTime(item.time)}
             </div>
             <div style="margin-bottom: 2px;">
-              <span style="color: #3b82f6;">● 账户余额:</span> ${formatCurrency(item.balance)}
+              <span style="color: #3b82f6;">● {{ $t('profitChart.accountBalance') }}:</span> ${formatCurrency(item.balance)}
             </div>
             <div style="margin-bottom: 2px;">
-              <span style="color: ${item.profit >= 0 ? '#10b981' : '#ef4444'};">● 总盈亏:</span> 
+              <span style="color: ${item.profit >= 0 ? '#10b981' : '#ef4444'};">● {{ $t('profitChart.totalProfitLoss') }}:</span> 
               <span style="color: ${item.profit >= 0 ? '#10b981' : '#ef4444'};">
                 ${formatCurrency(item.profit)}
               </span>
             </div>
             <div>
-              <span style="color: ${item.profitRate >= 0 ? '#10b981' : '#ef4444'};">● 收益率:</span> 
+              <span style="color: ${item.profitRate >= 0 ? '#10b981' : '#ef4444'};">● {{ $t('profitChart.profitRate') }}:</span> 
               <span style="color: ${item.profitRate >= 0 ? '#10b981' : '#ef4444'};">
                 ${item.profitRate.toFixed(2)}%
               </span>
@@ -154,7 +157,7 @@ const chartOption = computed(() => {
       }
     },
     legend: {
-      data: ['账户余额', '累计盈亏'],
+      data: [$t('profitChart.accountBalance'), $t('profitChart.cumulativeProfitLoss')],
       top: 30,
       textStyle: {
         color: '#374151'
@@ -197,7 +200,7 @@ const chartOption = computed(() => {
     yAxis: [
       {
         type: 'value',
-        name: '账户余额',
+        name: $t('profitChart.accountBalance'),
         position: 'left',
         axisLabel: {
           formatter: (value: number) => formatCurrency(value),
@@ -216,7 +219,7 @@ const chartOption = computed(() => {
       },
       {
         type: 'value',
-        name: '累计盈亏',
+        name: $t('profitChart.cumulativeProfitLoss'),
         position: 'right',
         axisLabel: {
           formatter: (value: number) => formatCurrency(value),
@@ -244,7 +247,7 @@ const chartOption = computed(() => {
     ],
     series: [
       {
-        name: '账户余额',
+        name: $t('profitChart.accountBalance'),
         type: 'line',
         yAxisIndex: 0,
         data: times.map((time, index) => [time, balances[index]]),
@@ -273,7 +276,7 @@ const chartOption = computed(() => {
         }
       },
       {
-        name: '累计盈亏',
+        name: $t('profitChart.cumulativeProfitLoss'),
         type: 'line',
         yAxisIndex: 1,
         data: times.map((time, index) => [time, profits[index]]),

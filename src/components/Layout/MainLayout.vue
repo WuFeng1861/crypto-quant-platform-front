@@ -69,7 +69,7 @@
               </button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
+                  <el-dropdown-item command="zh-CN">{{ $t('common.simplifiedChinese') }}</el-dropdown-item>
                   <el-dropdown-item command="en-US">English</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -107,7 +107,7 @@
           <!-- Logo -->
           <div class="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-700">
             <h1 class="text-xl font-bold text-gray-900 dark:text-white">
-              量化平台
+              {{ $t('common.quantPlatform') }}
             </h1>
           </div>
           
@@ -163,7 +163,7 @@ import {
 } from '@element-plus/icons-vue'
 
 const route = useRoute()
-const { t, locale } = useI18n()
+const { t: $t, locale } = useI18n()
 const userStore = useUserStore()
 
 const mobileMenuOpen = ref(false)
@@ -216,9 +216,9 @@ const menuItems = [
 const currentPageTitle = computed(() => {
   const meta = route.meta
   if (meta?.title) {
-    return t(meta.title as string)
+    return $t(meta.title as string)
   }
-  return t('nav.dashboard')
+  return $t('nav.dashboard')
 })
 
 const toggleTheme = () => {

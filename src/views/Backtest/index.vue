@@ -7,7 +7,7 @@
           {{ $t('backtest.title') }}
         </h1>
         <p class="page-subtitle">
-          管理和创建回测任务
+          {{ $t('backtest.subtitle') }}
         </p>
       </div>
       <router-link to="/backtest/create">
@@ -28,17 +28,17 @@
             clearable
           />
         </div>
-        <el-select v-model="statusFilter" placeholder="状态筛选" clearable class="w-32">
-          <el-option label="全部" value="" />
-          <el-option label="运行中" value="running" />
-          <el-option label="已完成" value="completed" />
-          <el-option label="失败" value="failed" />
+        <el-select v-model="statusFilter" :placeholder="$t('common.statusFilter')" clearable class="w-32">
+          <el-option :label="$t('common.all')" value="" />
+          <el-option :label="$t('backtest.status.running')" value="running" />
+          <el-option :label="$t('backtest.status.completed')" value="completed" />
+          <el-option :label="$t('backtest.status.failed')" value="failed" />
         </el-select>
         <el-button @click="resetFilters">
           {{ $t('common.reset') }}
         </el-button>
         <el-button @click="refreshData" :icon="Refresh">
-          刷新
+          {{ $t('common.refresh') }}
         </el-button>
       </div>
     </div>
@@ -51,9 +51,9 @@
 
       <div v-else-if="!filteredBacktests || filteredBacktests.length === 0" class="p-6">
         <EmptyState
-          title="暂无回测记录"
-          description="开始创建您的第一个回测任务"
-          action-text="创建回测"
+          :title="$t('backtest.noDataTitle')"
+          :description="$t('backtest.noDataDescription')"
+          :action-text="$t('backtest.noDataAction')"
           @action="$router.push('/backtest/create')"
         />
       </div>
@@ -63,28 +63,28 @@
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                策略
+                {{ $t('strategies.title') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                交易对
+                {{ $t('tradingPairs.title') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                时间范围
+                {{ $t('backtest.timeRange') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                初始资金
+                {{ $t('backtest.initialCapital') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                收益率
+                {{ $t('dashboard.returnRate') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                状态
+                {{ $t('common.status') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                创建时间
+                {{ $t('common.createdAt') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                操作
+                {{ $t('common.actions') }}
               </th>
             </tr>
           </thead>
@@ -119,7 +119,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                 <router-link :to="`/backtest/${backtest.id}`">
                   <el-button size="small" type="primary" link>
-                    查看
+                    {{ $t('common.view') }}
                   </el-button>
                 </router-link>
                 <el-button
@@ -129,7 +129,7 @@
                   link
                   @click="handleDelete(backtest)"
                 >
-                  删除
+                  {{ $t('common.delete') }}
                 </el-button>
               </td>
             </tr>
@@ -151,6 +151,9 @@ import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
 import { Plus, Search, Refresh } from '@element-plus/icons-vue'
 import type { BacktestResult } from '@/types'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const backtestStore = useBacktestStore()
 const strategyStore = useStrategyStore()
@@ -222,31 +225,31 @@ const getProfitRateClass = (profitRate: string) => {
 
 const getStrategyName = (strategyId: number) => {
   const strategy = strategyStore.strategies?.find(s => s.id === strategyId)
-  return strategy?.name || `策略 #${strategyId}`
+  return strategy?.name || `${$t('strategies.title')} #${strategyId}`
 }
 
 const getTradingPairSymbol = (pairId: number) => {
   const pair = priceDataStore.tradingPairs?.find(p => p.id === pairId)
-  return pair?.symbol || `交易对 #${pairId}`
+  return pair?.symbol || `${$t('tradingPairs.title')} #${pairId}`
 }
 
 const handleDelete = async (backtest: BacktestResult) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除回测记录吗？此操作不可撤销。`,
-      '确认删除',
+      $t('backtest.confirmDeleteMessage'),
+      $t('common.confirmDelete'),
       {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
+        confirmButtonText: $t('common.delete'),
+        cancelButtonText: $t('common.cancel'),
         type: 'warning'
       }
     )
     
     await backtestStore.deleteBacktest(backtest.id)
-    ElMessage.success('回测记录删除成功')
+    ElMessage.success($t('backtest.deleteSuccess'))
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      ElMessage.error($t('backtest.deleteFailed'))
     }
   }
 }
@@ -259,7 +262,7 @@ onMounted(async () => {
     priceDataStore.fetchTradingPairs()
   ])
   
-  // 每30秒自动刷新一次，以更新运行中的回测状态
+  // Auto refresh every 30 seconds to update running backtest status
   refreshInterval = setInterval(() => {
     if (backtestStore.runningBacktestsList?.length > 0) {
       backtestStore.fetchBacktests()

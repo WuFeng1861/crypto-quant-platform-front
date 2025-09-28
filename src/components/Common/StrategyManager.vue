@@ -3,14 +3,14 @@
     <!-- 策略列表 -->
     <div class="mb-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">策略管理</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ $t('strategyManager.title') }}</h3>
         <div class="flex space-x-2">
           <el-button @click="refreshStrategies" :icon="Refresh" :loading="loading">
-            刷新
+            {{ $t('common.refresh') }}
           </el-button>
           <router-link to="/strategies/create">
             <el-button type="primary" :icon="Plus">
-              创建策略
+              {{ $t('strategyManager.createStrategy') }}
             </el-button>
           </router-link>
         </div>
@@ -22,41 +22,41 @@
         stripe
         class="w-full"
       >
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="策略名称" min-width="150" />
-        <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="positionType" label="仓位类型" width="100">
+        <el-table-column prop="id" :label="$t('common.id')" width="80" />
+        <el-table-column prop="name" :label="$t('strategyManager.strategyName')" min-width="150" />
+        <el-table-column prop="description" :label="$t('common.description')" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="positionType" :label="$t('strategyManager.positionType')" width="100">
           <template #default="{ row }">
             <el-tag :type="getPositionTypeTag(row.positionType)">
               {{ getPositionTypeText(row.positionType) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="指标数量" width="100">
+        <el-table-column :label="$t('strategyManager.indicatorCount')" width="100">
           <template #default="{ row }">
             {{ row.indicators?.length || 0 }}
           </template>
         </el-table-column>
-        <el-table-column label="条件数量" width="100">
+        <el-table-column :label="$t('strategyManager.conditionCount')" width="100">
           <template #default="{ row }">
             {{ row.conditions?.length || 0 }}
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" width="180">
+        <el-table-column prop="createdAt" :label="$t('common.createdAt')" width="180">
           <template #default="{ row }">
             {{ formatDate(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column :label="$t('common.actions')" width="200" fixed="right">
           <template #default="{ row }">
             <div class="flex space-x-1">
               <router-link :to="`/strategies/${row.id}`">
                 <el-button size="small" :icon="View">
-                  查看
+                  {{ $t('common.view') }}
                 </el-button>
               </router-link>
               <el-button size="small" type="primary" @click="editStrategy(row)" :icon="Edit">
-                编辑
+                {{ $t('common.edit') }}
               </el-button>
               <el-button 
                 size="small" 
@@ -64,7 +64,7 @@
                 @click="deleteStrategy(row)"
                 :icon="Delete"
               >
-                删除
+                {{ $t('common.delete') }}
               </el-button>
             </div>
           </template>
@@ -91,6 +91,9 @@ import {
   Operation 
 } from '@element-plus/icons-vue'
 import type { StrategyWithDetails } from '@/types'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const router = useRouter()
 const strategyStore = useStrategyStore()
@@ -104,7 +107,7 @@ const refreshStrategies = async () => {
   try {
     await strategyStore.fetchStrategies(true)
   } catch (error) {
-    ElMessage.error('获取策略列表失败')
+    ElMessage.error($t('strategyManager.fetchStrategiesFailed'))
   } finally {
     loading.value = false
   }
@@ -119,22 +122,22 @@ const editStrategy = (strategy: StrategyWithDetails) => {
 const deleteStrategy = async (strategy: StrategyWithDetails) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除策略 "${strategy.name}" 吗？此操作不可恢复。`,
-      '确认删除',
+      $t('strategyManager.confirmDelete', { strategyName: strategy.name }),
+      $t('common.confirmDeletion'),
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: $t('common.confirm'),
+        cancelButtonText: $t('common.cancel'),
         type: 'warning',
       }
     )
 
     loading.value = true
     await strategyStore.deleteStrategy(strategy.id!)
-    ElMessage.success('策略删除成功')
+    ElMessage.success($t('strategyManager.deleteSuccess'))
     await refreshStrategies()
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除策略失败')
+      ElMessage.error($t('strategyManager.deleteFailed'))
     }
   } finally {
     loading.value = false
@@ -152,10 +155,14 @@ const getPositionTypeTag = (type: string) => {
 
 const getPositionTypeText = (type: string) => {
   switch (type) {
-    case 'long': return '做多'
-    case 'short': return '做空'
-    case 'both': return '双向'
-    default: return '未知'
+    case 'long':
+      return $t('common.long')
+    case 'short':
+      return $t('common.short')
+    case 'both':
+      return $t('common.both')
+    default:
+      return $t('common.unknown')
   }
 }
 

@@ -7,7 +7,7 @@
           {{ $t('strategies.title') }}
         </h1>
         <p class="page-subtitle">
-          管理和配置您的交易策略
+          {{ $t('strategies.subtitle') }}
         </p>
       </div>
     </div>
@@ -23,4 +23,7 @@
 
 <script setup lang="ts">
 import StrategyManager from '@/components/Common/StrategyManager.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 </script>

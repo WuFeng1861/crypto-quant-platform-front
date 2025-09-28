@@ -1,6 +1,6 @@
 <template>
   <div class="mb-6">
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">风险管理</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ $t('strategies.riskManagement') }}</h3>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <el-form-item :label="$t('strategies.buyFee')" prop="buyFee">
@@ -35,30 +35,30 @@
         />
       </el-form-item>
 
-      <el-form-item label="止盈比例 (%)" prop="takeProfitRatio">
+      <el-form-item :label="$t('strategies.takeProfitRatioLabel')" prop="takeProfitRatio">
         <el-input-number
           v-model="form.takeProfitRatio"
           :min="100"
           :max="1000"
           :step="1"
           :precision="0"
-          placeholder="可选，大于100"
+          :placeholder="$t('strategies.takeProfitRatioPlaceholder')"
           class="w-full"
         />
-        <div class="text-xs text-gray-500 mt-1">可选配置，设置后当盈利达到该比例时自动止盈</div>
+        <div class="text-xs text-gray-500 mt-1">{{ $t('strategies.takeProfitRatioTip') }}</div>
       </el-form-item>
 
-      <el-form-item label="止损比例 (%)" prop="stopLossRatio">
+      <el-form-item :label="$t('strategies.stopLossRatioLabel')" prop="stopLossRatio">
         <el-input-number
           v-model="form.stopLossRatio"
           :min="1"
           :max="99"
           :step="1"
           :precision="0"
-          placeholder="可选，0-100之间"
+          :placeholder="$t('strategies.stopLossRatioPlaceholder')"
           class="w-full"
         />
-        <div class="text-xs text-gray-500 mt-1">可选配置，设置后当亏损达到该比例时自动止损</div>
+        <div class="text-xs text-gray-500 mt-1">{{ $t('strategies.stopLossRatioTip') }}</div>
       </el-form-item>
     </div>
   </div>

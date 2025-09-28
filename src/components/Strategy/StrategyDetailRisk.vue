@@ -1,31 +1,31 @@
 <template>
   <div class="theme-card p-6">
-    <h3 class="section-title mb-4">风险管理</h3>
+    <h3 class="section-title mb-4">{{ $t('strategies.riskManagement') }}</h3>
     
     <dl class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div>
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">买入手续费</dt>
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('strategies.buyFeeLabel') }}</dt>
         <dd class="mt-1 text-sm font-mono text-gray-900 dark:text-white">
           {{ formatPercent(strategy.buyFee, 4, true) }}
         </dd>
       </div>
       
       <div>
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">卖出手续费</dt>
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('strategies.sellFeeLabel') }}</dt>
         <dd class="mt-1 text-sm font-mono text-gray-900 dark:text-white">
           {{ formatPercent(strategy.sellFee, 4, true) }}
         </dd>
       </div>
       
       <div>
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">爆仓比例</dt>
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('strategies.liquidationThresholdLabel') }}</dt>
         <dd class="mt-1 text-sm font-mono text-danger-600 dark:text-danger-400">
           {{ formatPercent(strategy.liquidationThreshold, 2, false) }}
         </dd>
       </div>
       
       <div>
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">仓位类型</dt>
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('strategies.positionType') }}</dt>
         <dd class="mt-1">
           <span :class="getPositionTypeClass(strategy.positionType)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
             {{ formatPositionType(strategy.positionType) }}
@@ -34,14 +34,14 @@
       </div>
       
       <div v-if="strategy.takeProfitRatio">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">止盈比例</dt>
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('strategies.takeProfitRatioLabel2') }}</dt>
         <dd class="mt-1 text-sm font-mono text-success-600 dark:text-success-400">
           {{ formatPercent(strategy.takeProfitRatio, 2, true) }}
         </dd>
       </div>
       
       <div v-if="strategy.stopLossRatio">
-        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">止损比例</dt>
+        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('strategies.stopLossRatioLabel2') }}</dt>
         <dd class="mt-1 text-sm font-mono text-danger-600 dark:text-danger-400">
           {{ formatPercent(strategy.stopLossRatio, 2, true) }}
         </dd>
@@ -58,14 +58,14 @@
         </div>
         <div class="ml-3">
           <h4 class="text-sm font-medium text-warning-800 dark:text-warning-200">
-            风险提示
+            {{ $t('strategies.riskWarning') }}
           </h4>
           <div class="mt-2 text-sm text-warning-700 dark:text-warning-300">
             <ul class="list-disc list-inside space-y-1">
-              <li v-if="strategy.liquidationThreshold < 10">爆仓比例过低，存在本金损失风险</li>
-              <li v-if="!strategy.stopLossRatio">未设置止损比例，建议添加止损保护</li>
-              <li v-if="!strategy.takeProfitRatio">未设置止盈比例，建议添加止盈策略</li>
-              <li v-if="strategy.buyFee + strategy.sellFee > 0.002">手续费成本较高，可能影响收益</li>
+              <li v-if="strategy.liquidationThreshold < 10">{{ $t('strategies.riskWarnings.lowLiquidation') }}</li>
+              <li v-if="!strategy.stopLossRatio">{{ $t('strategies.riskWarnings.noStopLoss') }}</li>
+              <li v-if="!strategy.takeProfitRatio">{{ $t('strategies.riskWarnings.noTakeProfit') }}</li>
+              <li v-if="strategy.buyFee + strategy.sellFee > 0.002">{{ $t('strategies.riskWarnings.highFees') }}</li>
             </ul>
           </div>
         </div>
@@ -78,6 +78,10 @@
 import { formatPercent } from '@/utils/format'
 import type { Strategy } from '@/types'
 
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
+
 interface Props {
   strategy: Strategy
 }
@@ -85,12 +89,8 @@ interface Props {
 defineProps<Props>()
 
 const formatPositionType = (type: string) => {
-  const types = {
-    long: '做多',
-    short: '做空',
-    both: '双向'
-  }
-  return types[type as keyof typeof types] || type
+  const typeKey = `strategies.positionTypes.${type}` as const
+  return $t(typeKey) || type
 }
 
 const getPositionTypeClass = (type: string) => {

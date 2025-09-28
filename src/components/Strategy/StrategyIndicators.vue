@@ -1,14 +1,14 @@
 <template>
   <div class="mb-6">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">指标配置</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ $t('strategies.indicatorConfig') }}</h3>
       <el-button type="primary" plain @click="addIndicator" :icon="Plus">
         {{ $t('strategies.addIndicator') }}
       </el-button>
     </div>
 
     <div v-if="form.indicators.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
-      暂未添加指标，请点击上方按钮添加
+      {{ $t('strategies.noIndicatorsAdded') }}
     </div>
 
     <div v-else class="space-y-4">
@@ -19,7 +19,7 @@
       >
         <div class="flex items-center justify-between mb-4">
           <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-            指标 {{ index + 1 }}
+            {{ $t('strategies.indicatorTitle') }} {{ index + 1 }}
             <span v-if="indicator.id" class="text-xs text-gray-500">(ID: {{ indicator.id }})</span>
           </h4>
           <el-button
@@ -28,19 +28,19 @@
             link
             @click="removeIndicator(index)"
           >
-            移除
+            {{ $t('strategies.removeIndicator') }}
           </el-button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <el-form-item
             :prop="`indicators.${index}.indicatorId`"
-            :rules="[{ required: true, message: '请选择指标', trigger: 'change' }]"
-            label="选择指标"
+            :rules="[{ required: true, message: $t('validation.required'), trigger: 'change' }]"
+            :label="$t('strategies.selectIndicator')"
           >
             <el-select
               v-model="indicator.indicatorId"
-              placeholder="选择指标"
+              :placeholder="$t('strategies.selectIndicatorPlaceholder')"
               @change="handleIndicatorChange(index)"
               class="w-full"
             >
@@ -53,7 +53,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="优先级">
+          <el-form-item :label="$t('strategies.priority')">
             <el-input-number
               v-model="indicator.priority"
               :min="1"
@@ -65,7 +65,7 @@
 
         <!-- 参数配置 -->
         <div v-if="getIndicatorById(indicator.indicatorId)?.parameters?.length" class="mt-4">
-          <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">参数配置</h5>
+          <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('strategies.parameterConfig') }}</h5>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
               v-for="param in getIndicatorById(indicator.indicatorId)?.parameters || []"
@@ -78,7 +78,7 @@
               <el-input
                 :model-value="getParameterValue(index, param.id!)"
                 @input="(value: string) => setParameterValue(index, param.id!, value)"
-                :placeholder="param.defaultValue || `请输入${param.name}`"
+                :placeholder="param.defaultValue || $t('strategies.inputParameterPlaceholder', { name: param.name })"
                 size="small"
               />
             </div>

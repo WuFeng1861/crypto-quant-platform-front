@@ -4,10 +4,10 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="page-title">
-          回测详情
+          {{ $t('backtest.detailTitle') }}
         </h1>
         <p class="page-subtitle">
-          查看回测结果和交易记录
+          {{ $t('backtest.detailSubtitle') }}
         </p>
       </div>
       <router-link to="/backtest">
@@ -54,23 +54,23 @@
       <!-- 运行中状态 -->
       <div v-else-if="backtest.status === 'running'" class="card p-6 text-center">
         <LoadingSpinner />
-        <p class="mt-4 text-gray-600 dark:text-gray-400">回测正在执行中，请稍候...</p>
+        <p class="mt-4 text-gray-600 dark:text-gray-400">{{ $t('backtest.runningMessage') }}</p>
         <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">
-          预计完成时间: {{ estimatedCompletionTime }}
+          {{ $t('backtest.estimatedTime') }}: {{ estimatedCompletionTime }}
         </p>
       </div>
 
       <!-- 失败状态 -->
       <div v-else-if="backtest.status === 'failed'" class="card p-6 text-center">
         <div class="text-danger-600 dark:text-danger-400">
-          <p class="text-lg font-medium">回测执行失败</p>
-          <p class="mt-2 text-sm">{{ backtest.earlyStopReason || '未知错误' }}</p>
+          <p class="text-lg font-medium">{{ $t('backtest.failedMessage') }}</p>
+          <p class="mt-2 text-sm">{{ backtest.earlyStopReason || $t('common.unknownError') }}</p>
         </div>
       </div>
     </div>
 
     <div v-else class="text-center py-12">
-      <EmptyState message="回测不存在" />
+      <EmptyState :message="$t('backtest.notFound')" />
     </div>
   </div>
 </template>
@@ -108,8 +108,8 @@ const backtest = computed(() => {
 })
 
 const estimatedCompletionTime = computed(() => {
-  // 简单的估算逻辑
-  return '约5-10分钟'
+  // Simple estimation logic
+  return $t('backtest.estimatedTimeRange')
 })
 
 
@@ -122,7 +122,7 @@ const loadTrades = async () => {
     await backtestStore.fetchTrades(backtest.value.id!)
     trades.value = backtestStore.currentTrades
   } catch (error) {
-    console.error('加载交易记录失败:', error)
+    console.error($t('backtest.loadTradesFailed'), error)
   } finally {
     loadingTrades.value = false
   }
@@ -134,7 +134,7 @@ const checkStatus = async () => {
   try {
     await backtestStore.fetchBacktestById(backtest.value.id!)
   } catch (error) {
-    console.error('检查回测状态失败:', error)
+    console.error($t('backtest.checkStatusFailed'), error)
   }
 }
 
@@ -142,7 +142,7 @@ onMounted(async () => {
   try {
     const id = Number(route.params.id)
     
-    // 并行加载必要的数据
+    // Load necessary data in parallel
     await Promise.all([
       backtestStore.fetchBacktestById(id),
       priceDataStore.fetchTimeframes(),
@@ -150,17 +150,17 @@ onMounted(async () => {
       strategyStore.fetchStrategies()
     ])
     
-    // 如果回测已完成，加载交易记录
+    // Load trades if backtest is completed
     if (backtest.value?.status === 'completed') {
       await loadTrades()
     }
     
-    // 如果回测正在运行，启动状态检查
+    // Start status check if backtest is running
     if (backtest.value?.status === 'running') {
-      statusCheckInterval = setInterval(checkStatus, 30000) // 每30秒检查一次
+      statusCheckInterval = setInterval(checkStatus, 30000) // Check every 30 seconds
     }
   } catch (error) {
-    console.error('加载回测详情失败:', error)
+    console.error($t('backtest.loadDetailFailed'), error)
   } finally {
     loading.value = false
   }

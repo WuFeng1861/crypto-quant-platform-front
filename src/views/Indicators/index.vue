@@ -7,7 +7,7 @@
           {{ $t('indicators.title') }}
         </h1>
         <p class="page-subtitle">
-          管理和创建技术指标
+          {{ $t('indicators.subtitle') }}
         </p>
       </div>
       <router-link to="/indicators/create">
@@ -42,9 +42,9 @@
 
       <div v-else-if="!filteredIndicators || filteredIndicators.length === 0" class="p-6">
         <EmptyState
-          title="暂无指标"
-          description="开始创建您的第一个技术指标"
-          action-text="创建指标"
+          title="{{ $t('indicators.emptyTitle') }}"
+          description="{{ $t('indicators.emptyDescription') }}"
+          action-text="{{ $t('indicators.create') }}"
           @action="$router.push('/indicators/create')"
         />
       </div>
@@ -84,7 +84,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                  {{ indicator.parameters?.length || 0 }} 个参数
+                  {{ indicator.parameters?.length || 0 }} {{ $t('common.parameters') }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -93,7 +93,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                 <router-link :to="`/indicators/${indicator.id}`">
                   <el-button size="small" type="primary" link>
-                    查看
+                    {{ $t('common.view') }}
                   </el-button>
                 </router-link>
                 <el-button
@@ -122,8 +122,10 @@ import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import type { Indicator } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 const indicatorStore = useIndicatorStore()
+const { t: $t } = useI18n()
 
 const searchQuery = ref('')
 
@@ -148,20 +150,20 @@ const resetFilters = () => {
 const handleDelete = async (indicator: Indicator) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除指标 "${indicator.name}" 吗？此操作不可撤销。`,
-      '确认删除',
+      t('indicators.deleteConfirm', { name: indicator.name }),
+      t('common.confirmDelete'),
       {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
+        confirmButtonText: t('common.delete'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning'
       }
     )
     
     await indicatorStore.deleteIndicator(indicator.id!)
-    ElMessage.success('指标删除成功')
+    ElMessage.success(t('indicators.deleteSuccess'))
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      ElMessage.error(t('indicators.deleteFailed'))
     }
   }
 }

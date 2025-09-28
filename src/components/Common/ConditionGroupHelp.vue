@@ -12,22 +12,22 @@
       </template>
       
       <div class="space-y-3">
-        <h4 class="font-medium text-gray-900 dark:text-white">条件分组逻辑说明</h4>
+        <h4 class="font-medium text-gray-900 dark:text-white">{{ $t('conditionGroup.logicExplanation') }}</h4>
         
         <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
-          <p><strong>分组规则：</strong></p>
+          <p><strong>{{ $t('conditionGroup.groupRules') }}</strong></p>
           <ul class="list-disc list-inside space-y-1 ml-2">
-            <li>同一组内的条件使用 <code class="bg-gray-100 px-1 rounded">AND</code> 逻辑连接</li>
-            <li>不同组之间使用 <code class="bg-gray-100 px-1 rounded">OR</code> 逻辑连接</li>
-            <li>默认分组为 1</li>
+            <li>{{ $t('conditionGroup.sameGroupAndLogic') }} <code class="bg-gray-100 px-1 rounded">AND</code> {{ $t('conditionGroup.logicConnect') }}</li>
+            <li>{{ $t('conditionGroup.diffGroupOrLogic') }} <code class="bg-gray-100 px-1 rounded">OR</code> {{ $t('conditionGroup.logicConnect') }}</li>
+            <li>{{ $t('conditionGroup.defaultGroup') }}</li>
           </ul>
           
-          <p><strong>示例：</strong></p>
+          <p><strong>{{ $t('common.example') }}</strong></p>
           <div class="bg-gray-50 dark:bg-gray-800 p-2 rounded text-xs">
-            <p>条件1 (组1): RSI > 50</p>
-            <p>条件2 (组1): MACD > 0</p>
-            <p>条件3 (组2): 价格 > MA20</p>
-            <p class="mt-2 font-medium">逻辑: (RSI > 50 AND MACD > 0) OR 价格 > MA20</p>
+            <p>{{ $t('conditionGroup.condition1') }}: RSI > 50</p>
+            <p>{{ $t('conditionGroup.condition2') }}: MACD > 0</p>
+            <p>{{ $t('conditionGroup.condition3') }}: {{$t('common.price')}} > MA20</p>
+            <p class="mt-2 font-medium">{{ $t('common.logic') }}: (RSI > 50 AND MACD > 0) OR {{$t('common.price')}} > MA20</p>
           </div>
         </div>
       </div>
@@ -37,6 +37,9 @@
 
 <script setup lang="ts">
 import { QuestionFilled } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 </script>
 
 <style scoped>

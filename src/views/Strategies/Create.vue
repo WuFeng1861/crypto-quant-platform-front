@@ -7,7 +7,7 @@
           {{ $t('strategies.create') }}
         </h1>
         <p class="page-subtitle">
-          创建新的交易策略
+          {{ $t('common.createNewStrategy') }}
         </p>
       </div>
       <router-link to="/strategies">
@@ -60,6 +60,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, type FormInstance } from 'element-plus'
 import { useStrategyStore } from '@/stores/strategies'
 import { useIndicatorStore } from '@/stores/indicators'
@@ -72,6 +73,7 @@ import StrategyConditions from '@/components/Strategy/StrategyConditions.vue'
 import type { CreateStrategyRequest } from '@/types'
 
 const router = useRouter()
+const { t } = useI18n()
 const strategyStore = useStrategyStore()
 const indicatorStore = useIndicatorStore()
 
@@ -101,9 +103,9 @@ const rules = {
     {
       validator: (rule: any, value: any, callback: any) => {
         if (value === undefined || value === null || value === '') {
-          callback() // 可选字段，允许为空
+          callback() // Optional field, allow empty
         } else if (value <= 100) {
-          callback(new Error('止盈比例必须大于100'))
+          callback(new Error(t('validation.takeProfitRatioError')))
         } else {
           callback()
         }
@@ -115,9 +117,9 @@ const rules = {
     {
       validator: (rule: any, value: any, callback: any) => {
         if (value === undefined || value === null || value === '') {
-          callback() // 可选字段，允许为空
+          callback() // Optional field, allow empty
         } else if (value <= 0 || value >= 100) {
-          callback(new Error('止损比例必须在0-100之间'))
+          callback(new Error(t('validation.stopLossRatioError')))
         } else {
           callback()
         }
@@ -140,21 +142,21 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     
     if (form.indicators.length === 0) {
-      ElMessage.error('请至少添加一个指标')
+      ElMessage.error(t('common.atLeastOneIndicator'))
       return
     }
     
     if (form.conditions.length === 0) {
-      ElMessage.error('请至少添加一个交易条件')
+      ElMessage.error(t('common.atLeastOneCondition'))
       return
     }
     
     loading.value = true
     await strategyStore.createStrategy(form)
-    ElMessage.success('策略创建成功')
+    ElMessage.success(`${t('strategies.title')}${t('common.createSuccess')}`)
     router.push('/strategies')
   } catch (error) {
-    console.error('创建策略失败:', error)
+    console.error(`${t('strategies.create')}${t('common.createFailed')}:`, error)
   } finally {
     loading.value = false
   }

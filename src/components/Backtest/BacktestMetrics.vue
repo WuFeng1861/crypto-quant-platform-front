@@ -3,7 +3,7 @@
     <div class="card p-4">
       <div class="flex items-center">
         <div class="flex-1">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">最终资金</p>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('backtest.finalCapital') }}</p>
           <p class="text-2xl font-bold text-gray-900 dark:text-white">
             {{ formatCurrency(backtest.finalCapital) }}
           </p>
@@ -14,7 +14,7 @@
     <div class="card p-4">
       <div class="flex items-center">
         <div class="flex-1">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">总收益</p>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('backtest.totalProfit') }}</p>
           <p class="text-2xl font-bold" :class="getReturnClass(parseFloat(backtest.totalProfit || '0'))">
             {{ formatCurrency(backtest.totalProfit) }}
           </p>
@@ -25,7 +25,7 @@
     <div class="card p-4">
       <div class="flex items-center">
         <div class="flex-1">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">收益率</p>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('backtest.profitRate') }}</p>
           <p class="text-2xl font-bold" :class="getReturnClass(parseFloat(backtest.profitRate || '0'))">
             {{ formatPercent(parseFloat(backtest.profitRate || '0'), 2, false) }}
           </p>
@@ -36,7 +36,7 @@
     <div class="card p-4">
       <div class="flex items-center">
         <div class="flex-1">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">最大回撤</p>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('backtest.maxDrawdown') }}</p>
           <p class="text-2xl font-bold text-danger-600 dark:text-danger-400">
             {{ formatPercent(backtest.maxDrawdown, 2, false) }}
           </p>
@@ -49,12 +49,15 @@
 <script setup lang="ts">
 import { formatCurrency, formatPercent } from '@/utils/format'
 import type { BacktestResult } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   backtest: BacktestResult
 }
 
 defineProps<Props>()
+
+const { t: $t } = useI18n()
 
 const getReturnClass = (value: number) => {
   if (value > 0) return 'text-success-600 dark:text-success-400'

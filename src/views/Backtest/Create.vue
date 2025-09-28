@@ -85,7 +85,7 @@
             <el-date-picker
               v-model="form.startTime"
               type="datetime"
-              placeholder="选择开始时间"
+              :placeholder="$t('backtest.selectStartTime')"
               class="w-full"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
@@ -96,7 +96,7 @@
             <el-date-picker
               v-model="form.endTime"
               type="datetime"
-              placeholder="选择结束时间"
+              :placeholder="$t('backtest.selectEndTime')"
               class="w-full"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
@@ -123,7 +123,7 @@
             class="w-full"
           />
           <div class="text-xs text-gray-500 mt-1">
-            当亏损达到此百分比时提前停止回测（可选）
+            {{ $t('backtest.earlyStopThresholdHelp') }}
           </div>
         </el-form-item>
 
@@ -136,19 +136,19 @@
             class="w-full"
           />
           <div class="text-xs text-gray-500 mt-1">
-            将资金分成几份进行交易（可选）
+            {{ $t('backtest.positionDivisionHelp') }}
           </div>
         </el-form-item>
 
         <!-- 策略预览 -->
         <div v-if="selectedStrategy" class="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">策略预览</h4>
+          <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ $t('backtest.strategyPreview') }}</h4>
           <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-            <div>策略名称: {{ selectedStrategy.name }}</div>
-            <div>仓位类型: {{ formatPositionType(selectedStrategy.positionType) }}</div>
-            <div>手续费: {{ formatPercent(selectedStrategy.buyFee) }} / {{ formatPercent(selectedStrategy.sellFee) }}</div>
-            <div>指标数量: {{ selectedStrategy.indicatorCount }}</div>
-            <div>交易条件: {{ selectedStrategy.conditionCount }}</div>
+            <div>{{ $t('strategies.name') }}: {{ selectedStrategy.name }}</div>
+            <div>{{ $t('strategies.positionType') }}: {{ formatPositionType(selectedStrategy.positionType) }}</div>
+            <div>{{ $t('strategies.fees') }}: {{ formatPercent(selectedStrategy.buyFee) }} / {{ formatPercent(selectedStrategy.sellFee) }}</div>
+            <div>{{ $t('strategies.indicatorCount') }}: {{ selectedStrategy.indicatorCount }}</div>
+            <div>{{ $t('strategies.conditionCount') }}: {{ selectedStrategy.conditionCount }}</div>
           </div>
         </div>
 
@@ -182,6 +182,9 @@ import { formatPercent, formatPositionType } from '@/utils/format'
 import { validationRules } from '@/utils/validation'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import type { BacktestRequest } from '@/types'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 const router = useRouter()
 const backtestStore = useBacktestStore()
@@ -203,11 +206,11 @@ const form = reactive<BacktestRequest>({
 })
 
 const rules = {
-  strategyId: [{ required: true, message: '请选择策略', trigger: 'change' }],
-  pairId: [{ required: true, message: '请选择交易对', trigger: 'change' }],
-  timeframeId: [{ required: true, message: '请选择时间框架', trigger: 'change' }],
-  startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
-  endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }],
+  strategyId: [{ required: true, message: $t('backtest.selectStrategy'), trigger: 'change' }],
+  pairId: [{ required: true, message: $t('backtest.selectPair'), trigger: 'change' }],
+  timeframeId: [{ required: true, message: $t('backtest.selectTimeframe'), trigger: 'change' }],
+  startTime: [{ required: true, message: $t('backtest.selectStartTime'), trigger: 'change' }],
+  endTime: [{ required: true, message: $t('backtest.selectEndTime'), trigger: 'change' }],
   initialCapital: [
     validationRules.required(),
     validationRules.range(1000, 10000000)
@@ -238,7 +241,7 @@ const handleSubmit = async () => {
     
     // 验证时间范围
     if (new Date(form.endTime) <= new Date(form.startTime)) {
-      ElMessage.error('结束时间必须晚于开始时间')
+      ElMessage.error($t('backtest.endTimeMustBeLater'))
       return
     }
     
@@ -246,13 +249,13 @@ const handleSubmit = async () => {
     const result = await backtestStore.createBacktest(form)
     
     if (result.success) {
-      ElMessage.success('回测任务创建成功，正在后台执行...')
+      ElMessage.success($t('backtest.createSuccess'))
       router.push('/backtest')
     } else {
-      ElMessage.error(result.message || '创建回测失败')
+      ElMessage.error(result.message || $t('backtest.createFailed'))
     }
   } catch (error) {
-    console.error('创建回测失败:', error)
+    console.error($t('backtest.createFailed'), error)
   } finally {
     loading.value = false
   }
@@ -266,7 +269,7 @@ onMounted(async () => {
     priceDataStore.fetchTimeframes()
   ])
   
-  // 设置默认时间范围（最近30天）
+  // Set default time range (last 30 days)
   const endDate = new Date()
   const startDate = new Date()
   startDate.setDate(startDate.getDate() - 30)

@@ -1,21 +1,21 @@
 <template>
   <div class="condition-logic-visualizer">
     <div v-if="showExample" class="mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-      <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">条件分组逻辑示例</h4>
+      <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ $t('conditionLogic.exampleTitle') }}</h4>
       <div class="space-y-2 text-sm">
         <div class="flex items-center space-x-2">
-          <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">分组1</span>
-          <span>条件A AND 条件B</span>
+          <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">{{ $t('conditionLogic.group1') }}</span>
+          <span>{{ $t('conditionLogic.conditionA') }} AND {{ $t('conditionLogic.conditionB') }}</span>
         </div>
         <div class="flex items-center space-x-2">
           <span class="text-gray-500">OR</span>
         </div>
         <div class="flex items-center space-x-2">
-          <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">分组2</span>
-          <span>条件C AND 条件D</span>
+          <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">{{ $t('conditionLogic.group2') }}</span>
+          <span>{{ $t('conditionLogic.conditionC') }} AND {{ $t('conditionLogic.conditionD') }}</span>
         </div>
         <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-          结果：(条件A AND 条件B) OR (条件C AND 条件D)
+          {{ $t('common.result') }}：( {{ $t('conditionLogic.conditionA') }} AND {{ $t('conditionLogic.conditionB') }} ) OR ( {{ $t('conditionLogic.conditionC') }} AND {{ $t('conditionLogic.conditionD') }} )
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@
     </div>
 
     <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
-      暂无条件配置
+      {{ $t('conditionLogic.noConditions') }}
     </div>
   </div>
 </template>
@@ -74,6 +74,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { StrategyCondition } from '@/types'
+import { useI18n } from 'vue-i18n'
+
+const { t: $t } = useI18n()
 
 interface Props {
   conditions: StrategyCondition[]
@@ -111,7 +114,7 @@ const getConditionDescription = (condition: StrategyCondition) => {
   const parts = []
   
   if (condition.indicatorIndex !== undefined) {
-    parts.push(`指标${condition.indicatorIndex + 1}`)
+    parts.push(`${$t('common.indicator')}${condition.indicatorIndex + 1}`)
   }
   
   if (condition.currentValuePath) {
@@ -123,7 +126,7 @@ const getConditionDescription = (condition: StrategyCondition) => {
   if (condition.comparisonType === 'constant' && condition.constantValue) {
     parts.push(condition.constantValue)
   } else if (condition.comparisonType === 'indicator' && condition.comparedIndicatorIndex !== undefined) {
-    parts.push(`指标${condition.comparedIndicatorIndex + 1}`)
+    parts.push(`${$t('common.indicator')}${condition.comparedIndicatorIndex + 1}`)
     if (condition.comparedValuePath) {
       parts.push(condition.comparedValuePath)
     }
@@ -134,9 +137,9 @@ const getConditionDescription = (condition: StrategyCondition) => {
 
 const getActionText = (action: string) => {
   switch (action) {
-    case 'buy': return '买入'
-    case 'sell': return '卖出'
-    case 'none': return '无操作'
+    case 'buy': return $t('common.buy')
+    case 'sell': return $t('common.sell')
+    case 'none': return $t('common.noOperation')
     default: return action
   }
 }

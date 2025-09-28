@@ -2,7 +2,7 @@
   <div class="card p-6">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-        指标计算
+        {{ $t('indicator.calculation') }}
       </h3>
       <el-button 
         type="primary" 
@@ -10,16 +10,16 @@
         :loading="loading"
         :disabled="!canCalculate"
       >
-        {{ loading ? '计算中...' : '计算指标' }}
+        {{ loading ? $t('common.calculating') : $t('indicator.calculateIndicator') }}
       </el-button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <el-form-item label="交易对">
+      <el-form-item :label="$t('common.tradingPair')">
         <el-select 
           :model-value="selectedPairId" 
           @update:model-value="$emit('update:selectedPairId', $event)"
-          placeholder="选择交易对"
+          :placeholder="$t('common.selectTradingPair')"
           class="w-full"
         >
           <el-option
@@ -31,11 +31,11 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="时间框架">
+      <el-form-item :label="$t('common.timeframe')">
         <el-select 
           :model-value="selectedTimeframeId" 
           @update:model-value="$emit('update:selectedTimeframeId', $event)"
-          placeholder="选择时间框架"
+          :placeholder="$t('common.selectTimeframe')"
           class="w-full"
         >
           <el-option
@@ -49,22 +49,22 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      <el-form-item label="开始时间">
+      <el-form-item :label="$t('common.startTime')">
         <el-date-picker
           :model-value="startTime"
           @update:model-value="$emit('update:startTime', $event)"
           type="datetime"
-          placeholder="选择开始时间"
+          :placeholder="$t('common.selectStartTime')"
           class="w-full"
         />
       </el-form-item>
 
-      <el-form-item label="结束时间">
+      <el-form-item :label="$t('common.endTime')">
         <el-date-picker
           :model-value="endTime"
           @update:model-value="$emit('update:endTime', $event)"
           type="datetime"
-          placeholder="选择结束时间"
+          :placeholder="$t('common.selectEndTime')"
           class="w-full"
         />
       </el-form-item>
@@ -72,7 +72,7 @@
 
     <!-- 参数配置 -->
     <div v-if="indicator.parameters?.length" class="mb-4">
-      <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">参数设置</h4>
+      <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('indicator.parameterSettings') }}</h4>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div
           v-for="param in indicator.parameters"
@@ -85,7 +85,7 @@
           <el-input
             :model-value="getParameterValue(param.id!)"
             @input="(value: string) => updateParameterValue(param.id!, value)"
-            :placeholder="param.defaultValue || `请输入${param.name}`"
+            :placeholder="param.defaultValue || $t('indicator.enterParameter', { paramName: param.name })"
             size="small"
           />
         </div>
@@ -97,6 +97,7 @@
 <script setup lang="ts">
 import type { Indicator, TradingPair, Timeframe } from '@/types'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   indicator: Indicator
@@ -121,6 +122,8 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+const { t: $t } = useI18n()
 
 const canCalculate = computed(() => {
   return props.selectedPairId && props.selectedTimeframeId && props.startTime && props.endTime

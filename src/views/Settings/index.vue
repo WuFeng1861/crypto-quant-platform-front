@@ -6,14 +6,14 @@
         {{ $t('nav.settings') }}
       </h1>
       <p class="page-subtitle">
-        系统设置和偏好配置
+        {{ $t('settings.subtitle') }}
       </p>
     </div>
 
     <!-- 外观设置 -->
     <div class="theme-card p-6">
       <h3 class="text-lg font-medium theme-text-primary mb-4">
-        外观设置
+        {{ $t('settings.appearance') }}
       </h3>
       
       <div class="space-y-4">
@@ -21,17 +21,17 @@
         <div class="flex items-center justify-between">
           <div>
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              主题模式
+              {{ $t('settings.themeMode') }}
             </label>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              选择浅色或深色主题
+              {{ $t('settings.themeDescription') }}
             </p>
           </div>
           <el-switch
             v-model="isDarkMode"
             @change="handleThemeChange"
-            active-text="深色"
-            inactive-text="浅色"
+            :active-text="$t('settings.dark')"
+            :inactive-text="$t('settings.light')"
           />
         </div>
 
@@ -39,15 +39,15 @@
         <div class="flex items-center justify-between">
           <div>
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              语言设置
+              {{ $t('settings.language') }}
             </label>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-              选择界面显示语言
+              {{ $t('settings.languageDescription') }}
             </p>
           </div>
           <el-select v-model="currentLocale" @change="handleLanguageChange" class="w-32">
-            <el-option label="简体中文" value="zh-CN" />
-            <el-option label="English" value="en-US" />
+            <el-option :label="$t('language.zhCN')" value="zh-CN" />
+          <el-option :label="$t('language.enUS')" value="en-US" />
           </el-select>
         </div>
       </div>
@@ -56,13 +56,13 @@
     <!-- API设置 -->
     <div class="card p-6">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        API设置
+        {{ $t('settings.apiSettings') }}
       </h3>
       
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            API基础URL
+            {{ $t('settings.apiBaseUrl') }}
           </label>
           <el-input
             v-model="apiBaseUrl"
@@ -70,13 +70,13 @@
             @blur="handleApiUrlChange"
           />
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            后端API服务器地址
+            {{ $t('settings.apiDescription') }}
           </p>
         </div>
 
         <div class="flex items-center space-x-4">
           <el-button @click="testConnection" :loading="testing">
-            测试连接
+            {{ $t('settings.testConnection') }}
           </el-button>
           <span v-if="connectionStatus" :class="connectionStatusClass">
             {{ connectionStatus }}
@@ -88,24 +88,24 @@
     <!-- 系统信息 -->
     <div class="card p-6">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        系统信息
+        {{ $t('settings.systemInfo') }}
       </h3>
       
       <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">版本</dt>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('settings.version') }}</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">v1.0.0</dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">构建时间</dt>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('settings.buildTime') }}</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ buildTime }}</dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">浏览器</dt>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('settings.browser') }}</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ userAgent }}</dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">屏幕分辨率</dt>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('settings.screenResolution') }}</dt>
           <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ screenResolution }}</dd>
         </div>
       </dl>
@@ -120,7 +120,7 @@ import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import api from '@/api'
 
-const { locale } = useI18n()
+const { locale, t: $t } = useI18n()
 const userStore = useUserStore()
 
 const apiBaseUrl = ref('https://quant.wufeng98.cn/api')
@@ -144,9 +144,9 @@ const currentLocale = computed({
 })
 
 const connectionStatusClass = computed(() => {
-  if (connectionStatus.value.includes('成功')) {
+  if (connectionStatus.value === $t('settings.connectionSuccess')) {
     return 'text-success-600'
-  } else if (connectionStatus.value.includes('失败')) {
+  } else if (connectionStatus.value === $t('settings.connectionFailed')) {
     return 'text-danger-600'
   }
   return 'text-gray-500'
@@ -166,18 +166,18 @@ const screenResolution = computed(() => {
 
 const handleThemeChange = (value: boolean) => {
   userStore.setTheme(value ? 'dark' : 'light')
-  ElMessage.success(`已切换到${value ? '深色' : '浅色'}主题`)
+  ElMessage.success(value ? $t('settings.themeSwitchedDark') : $t('settings.themeSwitchedLight'))
 }
 
 const handleLanguageChange = (value: 'zh-CN' | 'en-US') => {
   userStore.setLocale(value)
   locale.value = value
-  ElMessage.success('语言设置已更新')
+  ElMessage.success($t('settings.languageUpdated'))
 }
 
 const handleApiUrlChange = () => {
   // 这里可以更新API基础URL配置
-  ElMessage.info('API地址已更新，重启应用后生效')
+  ElMessage.info($t('settings.apiUpdated'))
 }
 
 const testConnection = async () => {
@@ -187,11 +187,11 @@ const testConnection = async () => {
   try {
     // 测试API连接
     await api.get('/health')
-    connectionStatus.value = '连接成功'
-    ElMessage.success('API连接测试成功')
+    connectionStatus.value = $t('settings.connectionSuccess')
+    ElMessage.success($t('settings.connectionSuccess'))
   } catch (error) {
-    connectionStatus.value = '连接失败'
-    ElMessage.error('API连接测试失败')
+    connectionStatus.value = $t('settings.connectionFailed')
+    ElMessage.error($t('settings.connectionFailed'))
   } finally {
     testing.value = false
   }

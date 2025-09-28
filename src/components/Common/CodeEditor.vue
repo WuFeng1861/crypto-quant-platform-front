@@ -6,10 +6,10 @@
       </label>
       <div class="flex items-center space-x-2">
         <el-button size="small" @click="formatCode">
-          格式化
+          {{ $t('common.format') }}
         </el-button>
         <el-button size="small" @click="copyCode">
-          复制
+          {{ $t('common.copy') }}
         </el-button>
       </div>
     </div>
@@ -18,7 +18,7 @@
       <textarea
         ref="textareaRef"
         v-model="localValue"
-        :placeholder="placeholder"
+        :placeholder="computedPlaceholder"
         :readonly="readonly"
         class="w-full min-h-[200px] p-4 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-vertical"
         @input="handleInput"
@@ -44,9 +44,12 @@ import { ElMessage } from 'element-plus'
 import hljs from 'highlight.js/lib/core'
 import javascript from 'highlight.js/lib/languages/javascript'
 import 'highlight.js/styles/github.css'
+import { useI18n } from 'vue-i18n'
 
 // 注册语言
 hljs.registerLanguage('javascript', javascript)
+
+const { t: $t } = useI18n()
 
 interface Props {
   modelValue: string
@@ -63,13 +66,16 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   language: 'javascript',
-  placeholder: '请输入代码...'
 })
 
 const emit = defineEmits<Emits>()
 
 const textareaRef = ref<HTMLTextAreaElement>()
 const localValue = ref(props.modelValue)
+
+const computedPlaceholder = computed(() => {
+  return props.placeholder || $t('common.enterCode')
+})
 
 // 监听外部值变化
 watch(() => props.modelValue, (newValue) => {
@@ -84,7 +90,7 @@ const highlightedCode = computed(() => {
     const result = hljs.highlight(localValue.value, { language: props.language })
     return result.value
   } catch (error) {
-    console.warn('代码高亮失败:', error)
+    console.warn($t('common.codeHighlightFailed'), error)
     return ''
   }
 })
@@ -106,19 +112,19 @@ const formatCode = () => {
       
       localValue.value = formatted
       emit('update:modelValue', formatted)
-      ElMessage.success('代码格式化完成')
+      ElMessage.success($t('common.codeFormatted'))
     }
   } catch (error) {
-    ElMessage.error('代码格式化失败')
+    ElMessage.error($t('common.codeFormatFailed'))
   }
 }
 
 const copyCode = async () => {
   try {
     await navigator.clipboard.writeText(localValue.value)
-    ElMessage.success('代码已复制到剪贴板')
+    ElMessage.success($t('common.codeCopied'))
   } catch (error) {
-    ElMessage.error('复制失败')
+    ElMessage.error($t('common.copyFailed'))
   }
 }
 </script>

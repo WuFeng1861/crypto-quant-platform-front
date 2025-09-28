@@ -40,9 +40,9 @@
 
       <div v-else-if="!filteredTimeframes || filteredTimeframes.length === 0" class="p-6">
         <EmptyState
-          title="暂无时间框架"
-          description="开始创建您的第一个时间框架"
-          action-text="创建时间框架"
+          :title="$t('timeframes.noTimeframes')"
+          :description="$t('timeframes.createFirstTimeframe')"
+          :action-text="$t('timeframes.createTimeframe')"
           @action="showCreateDialog = true"
         />
       </div>
@@ -147,7 +147,7 @@
             class="w-full"
           />
           <div class="text-xs text-gray-500 mt-1">
-            常用值：1分钟=60000，5分钟=300000，1小时=3600000，1天=86400000
+            {{ $t('timeframes.commonValues') }}
           </div>
         </el-form-item>
       </el-form>
@@ -176,8 +176,10 @@ import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import type { Timeframe } from '@/types'
+import { useI18n } from 'vue-i18n'
 
 const priceDataStore = usePriceDataStore()
+const { t: $t } = useI18n()
 
 const searchQuery = ref('')
 const showCreateDialog = ref(false)
@@ -219,13 +221,13 @@ const formatInterval = (intervalMs: number): string => {
   const days = hours / 24
   
   if (days >= 1) {
-    return `${days}天`
+    return `${days}${$t('common.days')}`
   } else if (hours >= 1) {
-    return `${hours}小时`
+    return `${hours}${$t('common.hours')}`
   } else if (minutes >= 1) {
-    return `${minutes}分钟`
+    return `${minutes}${$t('common.minutes')}`
   } else {
-    return `${seconds}秒`
+    return `${seconds}${$t('common.seconds')}`
   }
 }
 
@@ -237,11 +239,11 @@ const handleCreate = async () => {
     creating.value = true
     
     await priceDataStore.createTimeframe(form)
-    ElMessage.success('时间框架创建成功')
+    ElMessage.success(`${$t('timeframes.title')}${$t('common.createSuccess')}`)
     showCreateDialog.value = false
     resetForm()
   } catch (error) {
-    console.error('创建时间框架失败:', error)
+    ElMessage.error(`${$t('timeframes.title')}${$t('common.createFailed')}: ${error.message}`)
   } finally {
     creating.value = false
   }
@@ -250,20 +252,20 @@ const handleCreate = async () => {
 const handleDelete = async (timeframe: Timeframe) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除时间框架 "${timeframe.name}" 吗？此操作不可撤销。`,
-      '确认删除',
+      `${$t('timeframes.confirmDelete')} "${timeframe.name}" ${$t('common.irrevocable')}`,
+      $t('common.confirmDelete'),
       {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
+        confirmButtonText: $t('common.delete'),
+        cancelButtonText: $t('common.cancel'),
         type: 'warning'
       }
     )
     
     await priceDataStore.deleteTimeframe(timeframe.id)
-    ElMessage.success('时间框架删除成功')
+    ElMessage.success(`${$t('timeframes.title')}${$t('common.deleteSuccess')}`)
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      ElMessage.error(`${$t('timeframes.title')}${$t('common.deleteFailed')}: ${error.message}`)
     }
   }
 }
