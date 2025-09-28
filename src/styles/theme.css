@@ -1,0 +1,75 @@
+/* 主题 CSS 变量定义 */
+:root {
+  /* 浅色主题 */
+  --color-surface: 255 255 255;
+  --color-surface-variant: 249 250 251;
+  --color-on-surface: 17 24 39;
+  --color-on-surface-variant: 107 114 128;
+  --color-border: 229 231 235;
+  --color-border-variant: 209 213 219;
+  --color-primary: 59 130 246;
+}
+
+.dark {
+  /* 深色主题 */
+  --color-surface: 17 24 39;
+  --color-surface-variant: 31 41 55;
+  --color-on-surface: 255 255 255;
+  --color-on-surface-variant: 156 163 175;
+  --color-border: 55 65 81;
+  --color-border-variant: 75 85 99;
+  --color-primary: 96 165 250;
+}
+
+/* 主题过渡动画 */
+* {
+  transition: background-color 0.2s ease-in-out, 
+              border-color 0.2s ease-in-out, 
+              color 0.2s ease-in-out;
+}
+
+/* 自定义滚动条主题 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* 焦点样式 */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+}
+
+/* 按钮主题样式 */
+.btn-primary {
+  @apply bg-primary-600 hover:bg-primary-700 text-white focus-ring;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 theme-text-primary focus-ring;
+}
+
+.btn-danger {
+  @apply bg-danger-600 hover:bg-danger-700 text-white focus-ring;
+}
+
+/* 输入框主题样式 */
+.input-theme {
+  @apply theme-input focus-ring rounded-md shadow-sm;
+}
+
+/* 选择器主题样式 */
+.select-theme {
+  @apply theme-input focus-ring rounded-md shadow-sm;
+}

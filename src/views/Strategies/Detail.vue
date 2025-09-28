@@ -11,7 +11,7 @@
         </p>
       </div>
       <div class="flex space-x-2">
-        <router-link :to="`/strategies/${strategy?.id}/edit`">
+        <router-link :to="`/strategies/edit/${strategy?.id}`">
           <el-button type="primary" :icon="Edit">
             编辑策略
           </el-button>
@@ -30,150 +30,13 @@
 
     <div v-else-if="strategy" class="space-y-6">
       <!-- 基本信息 -->
-      <div class="card p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">基本信息</h3>
-        
-        <dl class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">策略名称</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ strategy.name }}</dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">仓位类型</dt>
-            <dd class="mt-1">
-              <span :class="getPositionTypeClass(strategy.positionType)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                {{ formatPositionType(strategy.positionType) }}
-              </span>
-            </dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">创建时间</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ formatTime(strategy.createdAt) }}</dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">买入手续费</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ formatPercent(strategy.buyFee) }}</dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">卖出手续费</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ formatPercent(strategy.sellFee) }}</dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">爆仓阈值</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ strategy.liquidationThreshold }}%</dd>
-          </div>
-          <div v-if="strategy.takeProfitRatio">
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">止盈比例</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ strategy.takeProfitRatio }}%</dd>
-          </div>
-          <div v-if="strategy.stopLossRatio">
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">止损比例</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ strategy.stopLossRatio }}%</dd>
-          </div>
-        </dl>
-
-        <div v-if="strategy.description" class="mt-4">
-          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">策略描述</dt>
-          <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ strategy.description }}</dd>
-        </div>
-      </div>
+      <StrategyDetailInfo :strategy="strategy" />
 
       <!-- 使用的指标 -->
-      <div class="card p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          使用的指标 ({{ strategy.indicators?.length || 0 }})
-        </h3>
-
-        <div v-if="!strategy.indicators?.length" class="text-center py-8">
-          <EmptyState message="暂未配置指标" />
-        </div>
-
-        <div v-else class="space-y-4">
-          <div
-            v-for="(indicator, index) in strategy.indicators"
-            :key="index"
-            class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                指标 {{ index + 1 }}: {{ getIndicatorName(indicator.indicatorId) }}
-              </h4>
-              <span class="text-xs text-gray-500 dark:text-gray-400">
-                优先级: {{ indicator.priority || 1 }}
-              </span>
-            </div>
-
-            <div v-if="indicator.parameters?.length" class="mt-2">
-              <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">参数配置</h5>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <div
-                  v-for="param in indicator.parameters"
-                  :key="param.parameterId"
-                  class="text-xs"
-                >
-                  <span class="text-gray-600 dark:text-gray-400">
-                    {{ getParameterName(indicator.indicatorId, param.parameterId) }}:
-                  </span>
-                  <span class="text-gray-900 dark:text-white ml-1">
-                    {{ param.value }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StrategyDetailIndicators :strategy="strategy" />
 
       <!-- 交易条件 -->
-      <div class="card p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          交易条件 ({{ strategy.conditions?.length || 0 }})
-        </h3>
-
-        <div v-if="!strategy.conditions?.length" class="text-center py-8">
-          <EmptyState message="暂未配置交易条件" />
-        </div>
-
-        <div v-else class="space-y-4">
-          <div
-            v-for="(condition, index) in strategy.conditions"
-            :key="index"
-            class="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                条件 {{ index + 1 }}
-              </h4>
-              <div class="flex items-center space-x-2">
-                <span :class="getActionClass(condition.action)" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium">
-                  {{ formatAction(condition.action) }}
-                </span>
-                <span v-if="condition.priority" class="text-xs text-gray-500 dark:text-gray-400">
-                  优先级: {{ condition.priority }}
-                </span>
-              </div>
-            </div>
-
-            <div class="text-sm text-gray-600 dark:text-gray-400">
-              <p>
-                指标{{ condition.indicatorIndex + 1 }} 
-                {{ condition.operator }} 
-                <span v-if="condition.comparisonType === 'constant'">
-                  {{ condition.constantValue }}
-                </span>
-                <span v-else>
-                  指标{{ (condition.comparedIndicatorIndex || 0) + 1 }}
-                </span>
-              </p>
-              
-              <div v-if="condition.customCode" class="mt-2">
-                <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">自定义代码</h5>
-                <pre class="bg-gray-100 dark:bg-gray-800 p-2 rounded text-xs overflow-x-auto"><code>{{ condition.customCode }}</code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StrategyDetailConditions :strategy="strategy" />
 
       <!-- 回测历史 -->
       <div class="card p-6">
@@ -193,7 +56,7 @@
         </div>
 
         <div v-else-if="!backtests.length" class="text-center py-8">
-          <EmptyState message="暂无回测记录" />
+          <EmptyState title="暂无回测记录" description="该策略还没有进行过回测" />
         </div>
 
         <div v-else class="overflow-x-auto">
@@ -254,7 +117,7 @@
     </div>
 
     <div v-else class="text-center py-12">
-      <EmptyState message="策略不存在" />
+      <EmptyState title="策略不存在" description="找不到指定的策略" />
     </div>
   </div>
 </template>
@@ -270,6 +133,10 @@ import { formatTime, formatPercent, formatPositionType, formatBacktestStatus } f
 import { ArrowLeft, Edit } from '@element-plus/icons-vue'
 import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
+import StrategyDetailInfo from '@/components/Strategy/StrategyDetailInfo.vue'
+import StrategyDetailRisk from '@/components/Strategy/StrategyDetailRisk.vue'
+import StrategyDetailIndicators from '@/components/Strategy/StrategyDetailIndicators.vue'
+import StrategyDetailConditions from '@/components/Strategy/StrategyDetailConditions.vue'
 import type { Backtest } from '@/types'
 
 const route = useRoute()
@@ -287,43 +154,7 @@ const strategy = computed(() => {
   return strategyStore.strategies.find(s => s.id === id)
 })
 
-const getIndicatorName = (indicatorId: number) => {
-  const indicator = indicatorStore.indicators.find(i => i.id === indicatorId)
-  return indicator?.name || `指标${indicatorId}`
-}
 
-const getParameterName = (indicatorId: number, parameterId: number) => {
-  const indicator = indicatorStore.indicators.find(i => i.id === indicatorId)
-  const parameter = indicator?.parameters.find(p => p.id === parameterId)
-  return parameter?.name || `参数${parameterId}`
-}
-
-const getPositionTypeClass = (type: string) => {
-  const classes = {
-    long: 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200',
-    short: 'bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200',
-    both: 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200'
-  }
-  return classes[type as keyof typeof classes] || 'bg-gray-100 text-gray-800'
-}
-
-const getActionClass = (action: string) => {
-  const classes = {
-    buy: 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200',
-    sell: 'bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200',
-    none: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-  }
-  return classes[action as keyof typeof classes] || 'bg-gray-100 text-gray-800'
-}
-
-const formatAction = (action: string) => {
-  const actions = {
-    buy: '买入',
-    sell: '卖出',
-    none: '无操作'
-  }
-  return actions[action as keyof typeof actions] || action
-}
 
 const getStatusClass = (status: string) => {
   const classes = {
@@ -365,10 +196,14 @@ const loadBacktests = async () => {
 onMounted(async () => {
   try {
     const id = Number(route.params.id)
+    if (!id || isNaN(id)) {
+      console.error('无效的策略ID')
+      return
+    }
     
     // 并行加载数据
     await Promise.all([
-      strategyStore.fetchStrategy(id),
+      strategyStore.fetchStrategyWithDetails(id),
       indicatorStore.fetchIndicators(),
       priceDataStore.fetchTradingPairs(),
       loadBacktests()

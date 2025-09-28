@@ -30,73 +30,10 @@
 
     <div v-else class="space-y-6">
       <!-- 指标信息 -->
-      <div class="card p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          基本信息
-        </h3>
-        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">名称</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ indicator.name }}</dd>
-          </div>
-          <div>
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">创建时间</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ formatTime(indicator.createdAt!) }}</dd>
-          </div>
-          <div class="md:col-span-2">
-            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">描述</dt>
-            <dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ indicator.description || '-' }}</dd>
-          </div>
-        </dl>
-      </div>
+      <IndicatorDetailInfo :indicator="indicator" />
 
       <!-- 参数列表 -->
-      <div class="card p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          参数列表
-        </h3>
-        <div v-if="!indicator.parameters || indicator.parameters.length === 0" class="text-center py-8">
-          <p class="text-gray-500 dark:text-gray-400">该指标没有参数</p>
-        </div>
-        <div v-else class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  参数名称
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  类型
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  默认值
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  描述
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr v-for="param in indicator.parameters || []" :key="param.name">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                  {{ param.name }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                    {{ param.paramType }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {{ param.defaultValue || '-' }}
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                  {{ param.description || '-' }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <IndicatorParameters :indicator="indicator" />
 
       <!-- 计算代码 -->
       <div class="card p-6">
@@ -264,6 +201,10 @@ import { validateJSON } from '@/utils/validation'
 import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
 import CodeEditor from '@/components/Common/CodeEditor.vue'
+import IndicatorDetailInfo from '@/components/Indicator/IndicatorDetailInfo.vue'
+import IndicatorParameters from '@/components/Indicator/IndicatorParameters.vue'
+import IndicatorCalculation from '@/components/Indicator/IndicatorCalculation.vue'
+import IndicatorResults from '@/components/Indicator/IndicatorResults.vue'
 import { ArrowLeft } from '@element-plus/icons-vue'
 
 const route = useRoute()

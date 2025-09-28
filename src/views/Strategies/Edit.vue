@@ -4,21 +4,26 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-          {{ $t('strategies.create') }}
+          编辑策略
         </h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          创建新的交易策略
+          修改策略配置和参数
         </p>
       </div>
-      <router-link to="/strategies">
-        <el-button :icon="ArrowLeft">
-          {{ $t('common.back') }}
+      <div class="flex space-x-2">
+        <router-link to="/strategies">
+          <el-button :icon="ArrowLeft">
+            返回列表
+          </el-button>
+        </router-link>
+        <el-button @click="resetForm" :icon="Refresh">
+          重置
         </el-button>
-      </router-link>
+      </div>
     </div>
 
-    <!-- 创建表单 -->
-    <div class="card p-6">
+    <!-- 编辑表单 -->
+    <div class="card p-6" v-loading="loading">
       <el-form
         ref="formRef"
         :model="form"
@@ -43,12 +48,12 @@
             <el-button
               type="primary"
               @click="handleSubmit"
-              :loading="loading"
+              :loading="submitLoading"
             >
-              {{ $t('common.create') }}
+              保存修改
             </el-button>
             <el-button @click="resetForm">
-              {{ $t('common.reset') }}
+              重置表单
             </el-button>
           </div>
         </el-form-item>
@@ -58,27 +63,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance } from 'element-plus'
 import { useStrategyStore } from '@/stores/strategies'
 import { useIndicatorStore } from '@/stores/indicators'
 import { validationRules } from '@/utils/validation'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ArrowLeft, Refresh } from '@element-plus/icons-vue'
 import StrategyBasicInfo from '@/components/Strategy/StrategyBasicInfo.vue'
 import StrategyRiskManagement from '@/components/Strategy/StrategyRiskManagement.vue'
 import StrategyIndicators from '@/components/Strategy/StrategyIndicators.vue'
 import StrategyConditions from '@/components/Strategy/StrategyConditions.vue'
-import type { CreateStrategyRequest } from '@/types'
+import type { UpdateStrategyRequest } from '@/types'
 
+const route = useRoute()
 const router = useRouter()
 const strategyStore = useStrategyStore()
 const indicatorStore = useIndicatorStore()
 
 const formRef = ref<FormInstance>()
 const loading = ref(false)
+const submitLoading = ref(false)
+const strategyId = computed(() => Number(route.params.id))
 
-const form = reactive<CreateStrategyRequest>({
+const form = reactive<UpdateStrategyRequest>({
   name: '',
   description: '',
   positionType: 'long',
@@ -127,10 +135,55 @@ const rules = {
   ]
 }
 
+
+
+const loadStrategy = async () => {
+  loading.value = true
+  try {
+    const strategy = await strategyStore.fetchStrategyWithDetails(strategyId.value)
+    
+    // 填充表单数据
+    Object.assign(form, {
+      name: strategy.name,
+      description: strategy.description || '',
+      positionType: strategy.positionType,
+      buyFee: Number(strategy.buyFee),
+      sellFee: Number(strategy.sellFee),
+      liquidationThreshold: Number(strategy.liquidationThreshold),
+      takeProfitRatio: strategy.takeProfitRatio || undefined,
+      stopLossRatio: strategy.stopLossRatio || undefined,
+      indicators: strategy.indicators?.map(ind => ({
+        id: ind.id,
+        indicatorId: ind.indicatorId,
+        priority: ind.priority,
+        parameters: ind.parameters || []
+      })) || [],
+      conditions: strategy.conditions?.map(cond => ({
+        id: cond.id,
+        indicatorIndex: cond.indicatorIndex,
+        comparisonType: cond.comparisonType,
+        operator: cond.operator,
+        conditionType: cond.conditionType,
+        action: cond.action,
+        priority: cond.priority,
+        group: cond.group || 1,
+        currentValuePath: cond.currentValuePath || '',
+        constantValue: cond.constantValue || '',
+        comparedIndicatorIndex: cond.comparedIndicatorIndex,
+        comparedValuePath: cond.comparedValuePath || '',
+        customCode: cond.customCode || ''
+      })) || []
+    })
+  } catch (error) {
+    ElMessage.error('加载策略失败')
+    router.push('/strategies')
+  } finally {
+    loading.value = false
+  }
+}
+
 const resetForm = () => {
-  formRef.value?.resetFields()
-  form.indicators = []
-  form.conditions = []
+  loadStrategy()
 }
 
 const handleSubmit = async () => {
@@ -139,28 +192,30 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     
-    if (form.indicators.length === 0) {
+    if (!form.indicators || form.indicators.length === 0) {
       ElMessage.error('请至少添加一个指标')
       return
     }
     
-    if (form.conditions.length === 0) {
+    if (!form.conditions || form.conditions.length === 0) {
       ElMessage.error('请至少添加一个交易条件')
       return
     }
     
-    loading.value = true
-    await strategyStore.createStrategy(form)
-    ElMessage.success('策略创建成功')
+    submitLoading.value = true
+    await strategyStore.updateStrategy(strategyId.value, form)
+    ElMessage.success('策略更新成功')
     router.push('/strategies')
   } catch (error) {
-    console.error('创建策略失败:', error)
+    console.error('更新策略失败:', error)
+    ElMessage.error('更新策略失败')
   } finally {
-    loading.value = false
+    submitLoading.value = false
   }
 }
 
-onMounted(() => {
-  indicatorStore.fetchIndicators()
+onMounted(async () => {
+  await indicatorStore.fetchIndicators()
+  await loadStrategy()
 })
 </script>

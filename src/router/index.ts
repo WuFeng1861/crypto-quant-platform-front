@@ -51,6 +51,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'strategies.detail' }
       },
       {
+        path: '/strategies/edit/:id',
+        name: 'EditStrategy',
+        component: () => import('@/views/Strategies/Edit.vue'),
+        meta: { title: 'strategies.edit' }
+      },
+      {
         path: '/backtest',
         name: 'Backtest',
         component: () => import('@/views/Backtest/index.vue'),

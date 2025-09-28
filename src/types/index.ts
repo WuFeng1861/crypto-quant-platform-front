@@ -70,6 +70,8 @@ export interface Timeframe {
 
 // 策略相关
 export interface StrategyIndicator {
+  id?: number
+  strategyId?: number
   indicatorId: number
   priority?: number
   parameters: Array<{
@@ -79,14 +81,16 @@ export interface StrategyIndicator {
 }
 
 export interface StrategyCondition {
-  indicatorIndex: number
-  comparisonType: 'indicator' | 'constant'
+  id?: number
+  strategyId?: number
+  indicatorIndex?: number
+  comparisonType?: 'indicator' | 'constant'
   comparedIndicatorIndex?: number
   constantValue?: string
   currentValuePath?: string
   comparedValuePath?: string
   operator: '>' | '<' | '>=' | '<=' | '==' | '!='
-  conditionType: string
+  conditionType: 'value' | 'crossover' | 'custom'
   action: 'buy' | 'sell' | 'none'
   group?: number
   priority?: number
@@ -181,8 +185,14 @@ export interface BacktestResult {
   updatedAt: string
 }
 
+// 回测类型别名
+export interface Backtest extends BacktestResult {}
+
 // 用户设置
 export interface UserSettings {
   theme: 'light' | 'dark'
   locale: 'zh-CN' | 'en-US'
 }
+
+// 导出策略相关类型
+export * from './strategy'

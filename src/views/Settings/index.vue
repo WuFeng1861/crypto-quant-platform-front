@@ -2,17 +2,17 @@
   <div class="space-y-6">
     <!-- 页面头部 -->
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      <h1 class="page-title">
         {{ $t('nav.settings') }}
       </h1>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      <p class="page-subtitle">
         系统设置和偏好配置
       </p>
     </div>
 
     <!-- 外观设置 -->
-    <div class="card p-6">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+    <div class="theme-card p-6">
+      <h3 class="text-lg font-medium theme-text-primary mb-4">
         外观设置
       </h3>
       
