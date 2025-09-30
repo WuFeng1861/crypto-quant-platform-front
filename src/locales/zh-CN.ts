@@ -77,7 +77,13 @@ export default {
     amount: '数量',
     buy: '买入',
     sell: '卖出',
+    liquidation: '强平',
+    takeProfit: '止盈',
+    stopLoss: '止损',
     seconds: '秒',
+    long: '做多',
+    short: '做空',
+    unknown: '未知',
   },
 
   nav: {
@@ -187,6 +193,10 @@ export default {
     conditionCount: '条件数量',
     title: '策略管理',
     createStrategy: '创建策略',
+    fetchStrategiesFailed: '获取策略失败',
+    confirmDelete: '确认删除策略',
+    deleteSuccess: '策略删除成功',
+    deleteFailed: '策略删除失败',
   },
 
   strategies: {
@@ -427,6 +437,7 @@ export default {
     totalProfitLoss: '总盈亏',
     profitRate: '收益率',
     cumulativeProfitLoss: '累计盈亏',
+    bullet: '● ',
   },
 
   tradingPairs: {

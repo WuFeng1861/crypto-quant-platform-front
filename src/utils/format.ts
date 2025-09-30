@@ -47,7 +47,7 @@ export const formatRelativeTime = (timestamp: number | string): string => {
   const now = dayjs()
   const time = dayjs(timestamp)
   const diff = now.diff(time, 'minute')
-  
+
   if (diff < 1) {
     return '刚刚'
   }
@@ -60,28 +60,19 @@ export const formatRelativeTime = (timestamp: number | string): string => {
   if (diff < 43200) {
     return `${Math.floor(diff / 1440)}天前`
   }
-  
+
   return time.format('YYYY-MM-DD')
 }
 
 // 格式化文件大小
 export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 B'
-  
+
   const k = 1024
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-}
 
-// 格式化交易类型
-export const formatTradeType = (type: string): string => {
-  const types: Record<string, string> = {
-    buy: '买入',
-    sell: '卖出'
-  }
-  return types[type] || type
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
 // 格式化回测状态

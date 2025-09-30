@@ -45,7 +45,13 @@ export default {
     atLeastOneCondition: 'Please add at least one trading condition',
     createNewStrategy: 'Create New Trading Strategy',
     editStrategyConfig: 'Edit Strategy Configuration and Parameters',
-    to: 'to'
+    to: 'to',
+    long: 'Long',
+    short: 'Short',
+    liquidation: 'Liquidation',
+    takeProfit: 'Take Profit',
+    stopLoss: 'Stop Loss',
+    unknown: 'Unknown'
   },
 
   nav: {
@@ -77,6 +83,19 @@ export default {
     returnRate: 'Return Rate',
     status: 'Status',
     createdAt: 'Created At'
+  },
+
+  strategyManager: {
+    title: 'Strategy Management',
+    createStrategy: 'Create Strategy',
+    strategyName: 'Strategy Name',
+    positionType: 'Position Type',
+    indicatorCount: 'Indicator Count',
+    conditionCount: 'Condition Count',
+    fetchStrategiesFailed: 'Failed to fetch strategies',
+    confirmDelete: 'Confirm Delete Strategy',
+    deleteSuccess: 'Strategy deleted successfully',
+    deleteFailed: 'Failed to delete strategy',
   },
 
   theme: {
@@ -324,7 +343,9 @@ export default {
       quantity: 'Quantity',
       fee: 'Fee',
       pnl: 'P&L'
-    }
+    },
+    cumulativeProfitLoss: 'Cumulative Profit/Loss',
+    bullet: '● '
   },
 
   tradingPairs: {

@@ -180,7 +180,10 @@ const getTradeTypeClass = (type: string) => {
 const formatTradeType = (type: string) => {
   const types = {
     buy: $t('common.buy'),
-    sell: $t('common.sell')
+    sell: $t('common.sell'),
+    liquidation: $t('common.liquidation'),
+    take_profit: $t('common.takeProfit'),
+    stop_loss: $t('common.stopLoss'),
   }
   return types[type as keyof typeof types] || type
 }
