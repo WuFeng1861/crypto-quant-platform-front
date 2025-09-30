@@ -86,7 +86,7 @@ const form = reactive<CreateStrategyRequest>({
   positionType: 'long',
   buyFee: 0.001,
   sellFee: 0.001,
-  liquidationThreshold: 10,
+  liquidationThreshold: 90,
   takeProfitRatio: undefined,
   stopLossRatio: undefined,
   indicators: [],
