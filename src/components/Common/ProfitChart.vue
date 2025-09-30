@@ -138,16 +138,16 @@ const chartOption = computed(() => {
               ${formatTime(item.time)}
             </div>
             <div style="margin-bottom: 2px;">
-              <span style="color: #3b82f6;">${$t('profitChart.bullet')} {{ $t('profitChart.accountBalance') }}:</span> ${formatCurrency(item.balance)}
+              <span style="color: #3b82f6;">${$t('profitChart.bullet')} ${ $t('profitChart.accountBalance') }:</span> ${formatCurrency(item.balance)}
             </div>
             <div style="margin-bottom: 2px;">
-              <span style="color: ${item.profit >= 0 ? '#10b981' : '#ef4444'};">${$t('profitChart.bullet')} {{ $t('profitChart.totalProfitLoss') }}:</span> 
+              <span style="color: ${item.profit >= 0 ? '#10b981' : '#ef4444'};">${$t('profitChart.bullet')} ${ $t('profitChart.totalProfitLoss') }:</span> 
               <span style="color: ${item.profit >= 0 ? '#10b981' : '#ef4444'};">
                 ${formatCurrency(item.profit)}
               </span>
             </div>
             <div>
-              <span style="color: ${item.profitRate >= 0 ? '#10b981' : '#ef4444'};">${$t('profitChart.bullet')} {{ $t('profitChart.profitRate') }}:</span> 
+              <span style="color: ${item.profitRate >= 0 ? '#10b981' : '#ef4444'};">${$t('profitChart.bullet')} ${ $t('profitChart.profitRate') }:</span> 
               <span style="color: ${item.profitRate >= 0 ? '#10b981' : '#ef4444'};">
                 ${item.profitRate.toFixed(2)}%
               </span>
