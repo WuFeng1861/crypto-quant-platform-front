@@ -99,8 +99,8 @@
                 {{ getTradingPairSymbol(backtest.pairId) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                <div>{{ formatTime(backtest.startTime, 'MM-DD') }}</div>
-                <div>{{ formatTime(backtest.endTime, 'MM-DD') }}</div>
+                <div>{{ formatTime(backtest.startTime, 'YYYY-MM-DD') }}</div>
+                <div>{{ formatTime(backtest.endTime, 'YYYY-MM-DD') }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                 {{ formatCurrency(backtest.initialCapital) }}
