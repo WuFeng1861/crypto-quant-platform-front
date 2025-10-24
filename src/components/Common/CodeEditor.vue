@@ -4,13 +4,27 @@
       <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
         {{ label }}
       </label>
-      <div class="flex items-center space-x-2">
-        <el-button size="small" @click="formatCode">
-          {{ $t('common.format') }}
-        </el-button>
-        <el-button size="small" @click="copyCode">
-          {{ $t('common.copy') }}
-        </el-button>
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center space-x-2">
+          <el-button size="default" @click="formatCode" :icon="Edit">
+            {{ $t('common.format') }}
+          </el-button>
+          <el-button size="default" @click="copyCode" :icon="CopyDocument">
+            {{ $t('common.copy') }}
+          </el-button>
+        </div>
+        <div class="flex items-center">
+          <el-button 
+            v-if="showAiGenerate" 
+            type="primary" 
+            size="default" 
+            @click="$emit('ai-generate')"
+            :loading="aiLoading"
+            :icon="MagicStick"
+          >
+            {{ $t('indicators.aiGenerate') }}
+          </el-button>
+        </div>
       </div>
     </div>
     
@@ -45,6 +59,7 @@ import hljs from 'highlight.js/lib/core'
 import javascript from 'highlight.js/lib/languages/javascript'
 import 'highlight.js/styles/github.css'
 import { useI18n } from 'vue-i18n'
+import { MagicStick, CopyDocument, Edit } from '@element-plus/icons-vue'
 
 // 注册语言
 hljs.registerLanguage('javascript', javascript)
@@ -58,10 +73,13 @@ interface Props {
   readonly?: boolean
   language?: string
   error?: string
+  showAiGenerate?: boolean
+  aiLoading?: boolean
 }
 
 interface Emits {
   (e: 'update:modelValue', value: string): void
+  (e: 'ai-generate'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {

@@ -52,6 +52,9 @@
               v-model="form.calculationCode"
               :placeholder="calculationCodePlaceholder"
               language="javascript"
+              show-ai-generate
+              :ai-loading="aiLoading"
+              @ai-generate="generateIndicator"
             />
           </div>
         </el-form-item>
@@ -157,6 +160,7 @@ import CodeEditor from '@/components/Common/CodeEditor.vue'
 import { ArrowLeft, Plus } from '@element-plus/icons-vue'
 import type { Indicator, IndicatorParameter } from '@/types'
 import { useI18n } from 'vue-i18n'
+import { aiIndicatorApi } from '@/api/aiIndicator'
 
 const { t } = useI18n()
 
@@ -165,6 +169,7 @@ const indicatorStore = useIndicatorStore()
 
 const formRef = ref<FormInstance>()
 const loading = ref(false)
+const aiLoading = ref(false)
 
 const form = reactive<Omit<Indicator, 'id' | 'createdAt' | 'updatedAt'>>({
   name: '',
@@ -217,6 +222,49 @@ const removeParameter = (index: number) => {
 const resetForm = () => {
   formRef.value?.resetFields()
   form.parameters = []
+}
+
+// AI生成指标函数
+const generateIndicator = async () => {
+  if (!form.name || !form.description) {
+    ElMessage.warning(t('indicators.aiGenerateWarning'))
+    return
+  }
+
+  aiLoading.value = true
+  try {
+    // 构建用户输入，使用指定模板
+    const userInput = `创建一个${form.description}的${form.name}的指标`
+    
+    const response = await aiIndicatorApi.generate({ userInput })
+    
+    if (response.success && response.generatedCode) {
+      // 填充生成的代码
+      form.calculationCode = response.generatedCode.code
+      
+      // 清空现有参数
+      form.parameters = []
+      
+      // 添加生成的参数
+      response.generatedCode.parameters.forEach((param: any) => {
+        form.parameters.push({
+          name: param.name,
+          paramType: param.type,
+          defaultValue: param.defaultValue,
+          description: param.description
+        })
+      })
+      
+      ElMessage.success(t('indicators.aiGenerateSuccess'))
+    } else {
+      ElMessage.error(t('indicators.aiGenerateFailed'))
+    }
+  } catch (error: any) {
+    console.error('AI生成指标失败:', error)
+    ElMessage.error(error.response?.data?.message || t('indicators.aiGenerateFailed'))
+  } finally {
+    aiLoading.value = false
+  }
 }
 
 const handleSubmit = async () => {

@@ -4,8 +4,8 @@ import type { ApiResponse } from '@/types'
 
 // 创建 axios 实例
 const api: AxiosInstance = axios.create({
-  // baseURL: 'http://localhost:3099',
-  baseURL: 'https://quant.wufeng98.cn/api',
+  baseURL: 'http://localhost:3099',
+  // baseURL: 'https://quant.wufeng98.cn/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
@@ -31,18 +31,18 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response: AxiosResponse<ApiResponse<any>>) => {
     const { data } = response
-    
+
     // 检查业务状态码
     if (data.code !== 200) {
       ElMessage.error(data.message || '请求失败')
       return Promise.reject(new Error(data.message || '请求失败'))
     }
-    
+
     return data.data
   },
   (error) => {
     let message = '网络错误'
-    
+
     if (error.response) {
       const { status, data } = error.response
       switch (status) {
@@ -67,10 +67,17 @@ api.interceptors.response.use(
     } else if (error.request) {
       message = '网络连接失败'
     }
-    
+
     ElMessage.error(message)
     return Promise.reject(error)
   }
 )
 
 export default api
+
+// 导出各个API模块
+export * from './strategies'
+export * from './indicators'
+export * from './backtest'
+export * from './priceData'
+export * from './aiIndicator'

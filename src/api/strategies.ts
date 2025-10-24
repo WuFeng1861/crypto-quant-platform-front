@@ -44,6 +44,8 @@ export const strategyApi = {
     return api.delete(`/strategies/${id}`)
   },
 
+
+
   // 获取策略指标
   getIndicators(strategyId: number) {
     return api.get(`/strategies/${strategyId}/indicators`)

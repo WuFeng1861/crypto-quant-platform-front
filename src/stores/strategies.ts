@@ -114,6 +114,9 @@ export const useStrategyStore = defineStore('strategies', {
         throw error
       }
     },
+    
+    // 不再需要此方法，已在StrategyManager.vue中直接实现复制功能
+    // 通过获取策略详情并调用创建策略接口来实现
 
     // 指标管理
     async updateIndicator(strategyId: number, indicatorId: number, data: UpdateIndicatorRequest) {

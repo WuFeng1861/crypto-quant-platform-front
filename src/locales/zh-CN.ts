@@ -184,6 +184,10 @@ export default {
     parameterDescription: '参数描述',
     parameterDescriptionOptional: '参数描述 (可选)',
     defaultValueOptional: '默认值 (可选)',
+    aiGenerate: 'AI生成',
+    aiGenerateWarning: '请先填写指标名称和描述',
+    aiGenerateSuccess: 'AI生成指标成功',
+    aiGenerateFailed: 'AI生成指标失败',
   },
 
   strategyManager: {
@@ -197,6 +201,13 @@ export default {
     confirmDelete: '确认删除策略',
     deleteSuccess: '策略删除成功',
     deleteFailed: '策略删除失败',
+    copy: '复制',
+    copyStrategy: '复制策略',
+    copyStrategyTitle: '复制策略',
+    copyStrategyDesc: '基于选中的策略创建一个新策略',
+    newStrategyName: '新策略名称',
+    copySuccess: '策略复制成功',
+    copyFailed: '策略复制失败',
   },
 
   strategies: {

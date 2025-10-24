@@ -47,7 +47,7 @@
             {{ formatDate(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column :label="$t('common.actions')" width="200" fixed="right">
+        <el-table-column :label="$t('common.actions')" width="350" fixed="right">
           <template #default="{ row }">
             <div class="flex space-x-1">
               <router-link :to="`/strategies/${row.id}`">
@@ -57,6 +57,14 @@
               </router-link>
               <el-button size="small" type="primary" @click="editStrategy(row)" :icon="Edit">
                 {{ $t('common.edit') }}
+              </el-button>
+              <el-button 
+                size="small" 
+                type="success" 
+                @click="copyStrategy(row)"
+                :icon="CopyDocument"
+              >
+                {{ $t('strategyManager.copy') }}
               </el-button>
               <el-button 
                 size="small" 
@@ -73,6 +81,26 @@
     </div>
 
 
+    <!-- 复制策略对话框 -->
+    <el-dialog
+      v-model="showCopyDialog"
+      :title="$t('strategyManager.copyStrategy')"
+      width="30%"
+    >
+      <el-form>
+        <el-form-item :label="$t('strategyManager.newStrategyName')" required>
+          <el-input v-model="newStrategyName" autofocus />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showCopyDialog = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="handleCopyConfirm" :loading="loading">
+            {{ $t('common.confirm') }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -88,10 +116,15 @@ import {
   Edit, 
   Delete, 
   TrendCharts, 
-  Operation 
+  Operation,
+  CopyDocument
 } from '@element-plus/icons-vue'
 import type { StrategyWithDetails } from '@/types'
 import { useI18n } from 'vue-i18n'
+
+const showCopyDialog = ref(false)
+const newStrategyName = ref('')
+const currentStrategy = ref<StrategyWithDetails | null>(null)
 
 const { t: $t } = useI18n()
 
@@ -117,6 +150,68 @@ const refreshStrategies = async () => {
 
 const editStrategy = (strategy: StrategyWithDetails) => {
   router.push(`/strategies/edit/${strategy.id}`)
+}
+
+const copyStrategy = async (strategy: StrategyWithDetails) => {
+  currentStrategy.value = strategy
+  newStrategyName.value = `${strategy.name} (Copy)`
+  showCopyDialog.value = true
+}
+
+const handleCopyConfirm = async () => {
+  if (!newStrategyName.value.trim()) {
+    ElMessage.error($t('strategyManager.nameRequired'))
+    return
+  }
+  
+  loading.value = true
+  try {
+    // 获取完整的策略数据
+    const strategyData = await strategyStore.fetchStrategyWithDetails(currentStrategy.value!.id!)
+    
+    // 创建新策略数据，复制原策略的所有属性
+    const newStrategyData = {
+      name: newStrategyName.value,
+      description: strategyData.description,
+      positionType: strategyData.positionType,
+      buyFee: Math.max(0, Math.min(1, parseFloat(strategyData.buyFee as any))), // 确保在0到1之间
+      sellFee: Math.max(0, Math.min(1, parseFloat(strategyData.sellFee as any))), // 确保在0到1之间
+      liquidationThreshold: Math.max(0, Math.min(100, parseFloat(strategyData.liquidationThreshold as any))), // 确保在0到100之间
+      takeProfitRatio: strategyData.takeProfitRatio,
+      stopLossRatio: strategyData.stopLossRatio,
+      indicators: strategyData.indicators.map(indicator => ({
+        indicatorId: indicator.indicatorId,
+        priority: indicator.priority,
+        parameters: indicator.parameters
+      })),
+      conditions: strategyData.conditions.map(condition => ({
+        indicatorIndex: condition.indicatorIndex,
+        comparisonType: condition.comparisonType,
+        comparedIndicatorIndex: condition.comparedIndicatorIndex,
+        constantValue: condition.constantValue,
+        currentValuePath: condition.currentValuePath,
+        comparedValuePath: condition.comparedValuePath,
+        operator: condition.operator,
+        conditionType: condition.conditionType,
+        action: condition.action,
+        group: condition.group,
+        priority: condition.priority,
+        customCode: condition.customCode
+      }))
+    }
+    
+    // 调用创建策略接口
+    await strategyStore.createStrategy(newStrategyData)
+    ElMessage.success($t('strategyManager.copySuccess'))
+    showCopyDialog.value = false
+    newStrategyName.value = ''
+    await refreshStrategies()
+  } catch (error) {
+    console.error('复制策略失败:', error)
+    ElMessage.error($t('strategyManager.copyFailed'))
+  } finally {
+    loading.value = false
+  }
 }
 
 const deleteStrategy = async (strategy: StrategyWithDetails) => {
