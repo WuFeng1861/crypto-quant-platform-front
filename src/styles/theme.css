@@ -1,6 +1,7 @@
 /* 主题 CSS 变量定义 */
 :root {
-  /* 浅色主题 */
+  color-scheme: light;
+  
   --color-surface: 255 255 255;
   --color-surface-variant: 249 250 251;
   --color-on-surface: 17 24 39;
@@ -8,10 +9,29 @@
   --color-border: 229 231 235;
   --color-border-variant: 209 213 219;
   --color-primary: 59 130 246;
+  --color-primary-hover: 37 99 235;
+  --color-success: 34 197 94;
+  --color-danger: 239 68 68;
+  --color-warning: 234 179 8;
+  
+  --bg-body: 249 250 251;
+  --bg-card: 255 255 255;
+  --bg-input: 255 255 255;
+  
+  --text-primary: 17 24 39;
+  --text-secondary: 107 114 128;
+  --text-muted: 156 163 175;
+  
+  --border-color: 229 231 235;
+  --border-hover: 209 213 219;
+  
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
 .dark {
-  /* 深色主题 */
+  color-scheme: dark;
+  
   --color-surface: 17 24 39;
   --color-surface-variant: 31 41 55;
   --color-on-surface: 255 255 255;
@@ -19,16 +39,48 @@
   --color-border: 55 65 81;
   --color-border-variant: 75 85 99;
   --color-primary: 96 165 250;
+  --color-primary-hover: 59 130 246;
+  --color-success: 74 222 128;
+  --color-danger: 248 113 113;
+  --color-warning: 250 204 21;
+  
+  --bg-body: 17 24 39;
+  --bg-card: 31 41 55;
+  --bg-input: 55 65 81;
+  
+  --text-primary: 243 244 246;
+  --text-secondary: 156 163 175;
+  --text-muted: 107 114 128;
+  
+  --border-color: 55 65 81;
+  --border-hover: 75 85 99;
+  
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
 }
 
-/* 主题过渡动画 */
-* {
-  transition: background-color 0.2s ease-in-out, 
-              border-color 0.2s ease-in-out, 
+html {
+  transition: background-color 0.2s ease-in-out;
+}
+
+body,
+.card,
+.bg-white,
+.dark\:bg-gray-800,
+.dark\:bg-gray-900,
+.el-card,
+.el-dialog,
+.el-dropdown-menu,
+.el-select-dropdown,
+.el-table,
+input,
+textarea,
+select {
+  transition: background-color 0.2s ease-in-out,
+              border-color 0.2s ease-in-out,
               color 0.2s ease-in-out;
 }
 
-/* 自定义滚动条主题 */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -46,12 +98,10 @@
   @apply bg-gray-400 dark:bg-gray-500;
 }
 
-/* 焦点样式 */
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
 
-/* 按钮主题样式 */
 .btn-primary {
   @apply bg-primary-600 hover:bg-primary-700 text-white focus-ring;
 }
@@ -64,12 +114,10 @@
   @apply bg-danger-600 hover:bg-danger-700 text-white focus-ring;
 }
 
-/* 输入框主题样式 */
 .input-theme {
   @apply theme-input focus-ring rounded-md shadow-sm;
 }
 
-/* 选择器主题样式 */
 .select-theme {
   @apply theme-input focus-ring rounded-md shadow-sm;
 }

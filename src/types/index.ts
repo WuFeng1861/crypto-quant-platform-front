@@ -194,5 +194,92 @@ export interface UserSettings {
   locale: 'zh-CN' | 'en-US'
 }
 
+// AI 策略生成相关类型
+export interface AIIndicatorParameter {
+  name: string
+  description: string
+  paramType: 'number' | 'string' | 'boolean'
+  defaultValue: string
+}
+
+export interface AIStrategyIndicator {
+  id: number
+  name: string
+  description: string
+  indicatorNewsIndex: number
+  parameters: Array<{
+    id: number
+    name: string
+    value: string
+  }>
+}
+
+export interface AIStrategyCondition {
+  indicatorIndex: number
+  comparisonType: 'constant' | 'indicator'
+  comparedIndicatorIndex?: number
+  constantValue?: string
+  currentValuePath: string
+  comparedValuePath: string
+  operator: '>' | '>=' | '==' | '!=' | '<' | '<='
+  conditionType: 'crossover' | 'value'
+  action: 'buy' | 'sell'
+  group: number
+  priority: number
+  customCode: string
+}
+
+export interface AIGeneratedStrategy {
+  name: string
+  description: string
+  positionType: 'long' | 'short' | 'both'
+  buyFee: number
+  sellFee: number
+  liquidationThreshold: number
+  takeProfitRatio: number | null
+  stopLossRatio: number | null
+  indicators: AIStrategyIndicator[]
+  conditions: AIStrategyCondition[]
+}
+
+export interface AIGenerateStrategyResponse {
+  success: boolean
+  generatedStrategy: AIGeneratedStrategy
+  createdIndicators: AICreatedIndicator[]
+}
+
+export interface AICreatedIndicator {
+  id: number
+  name: string
+  description: string
+  calculationCode: string
+  parameters: Array<{
+    id: number
+    name: string
+    description: string
+    paramType: string
+    defaultValue: string
+  }>
+}
+
+export interface AICreateStrategyResponse {
+  success: boolean
+  strategy: {
+    id: number
+    name: string
+    description: string
+    positionType: 'long' | 'short' | 'both'
+    buyFee: number
+    sellFee: number
+    liquidationThreshold: number
+    takeProfitRatio: number | null
+    stopLossRatio: number | null
+    createdAt: string
+    updatedAt: string
+  }
+  aiGeneratedData: AIGeneratedStrategy
+  createdIndicators: AICreatedIndicator[]
+}
+
 // 导出策略相关类型
 export * from './strategy'

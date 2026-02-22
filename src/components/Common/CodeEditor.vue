@@ -28,21 +28,25 @@
       </div>
     </div>
     
-    <div class="relative">
+    <div class="code-editor-container relative rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 overflow-hidden">
+      <!-- 语法高亮层 -->
+      <div
+        v-if="highlightedCode && !props.readonly"
+        ref="highlightRef"
+        class="code-highlight absolute top-0 left-0 right-0 bottom-0 font-mono text-sm overflow-hidden"
+        v-html="highlightedCode"
+      />
+      
+      <!-- 输入层 -->
       <textarea
         ref="textareaRef"
         v-model="localValue"
         :placeholder="computedPlaceholder"
         :readonly="readonly"
-        class="w-full min-h-[200px] p-4 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-vertical"
+        class="code-textarea relative w-full min-h-[200px] font-mono text-sm bg-transparent resize-vertical"
+        :class="{ 'text-transparent caret-black dark:caret-white': highlightedCode && !props.readonly }"
         @input="handleInput"
-      />
-      
-      <!-- 语法高亮覆盖层 -->
-      <div
-        v-if="highlightedCode"
-        class="absolute inset-0 p-4 font-mono text-sm pointer-events-none overflow-auto"
-        v-html="highlightedCode"
+        @scroll="syncScroll"
       />
     </div>
     
@@ -89,6 +93,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 const textareaRef = ref<HTMLTextAreaElement>()
+const highlightRef = ref<HTMLDivElement>()
 const localValue = ref(props.modelValue)
 
 const computedPlaceholder = computed(() => {
@@ -115,6 +120,13 @@ const highlightedCode = computed(() => {
 
 const handleInput = () => {
   emit('update:modelValue', localValue.value)
+}
+
+const syncScroll = () => {
+  if (highlightRef.value && textareaRef.value) {
+    highlightRef.value.scrollTop = textareaRef.value.scrollTop
+    highlightRef.value.scrollLeft = textareaRef.value.scrollLeft
+  }
 }
 
 const formatCode = () => {
@@ -148,14 +160,69 @@ const copyCode = async () => {
 </script>
 
 <style scoped>
-.code-editor textarea {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+.code-editor-container {
+  min-height: 200px;
+}
+
+.code-textarea {
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  padding: 16px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 14px;
   line-height: 1.5;
   tab-size: 2;
+  letter-spacing: 0;
+  word-spacing: 0;
+  color: #1f2937;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: vertical;
+  z-index: 1;
+}
+
+.dark .code-textarea {
+  color: #f3f4f6;
+}
+
+.code-highlight {
+  padding: 16px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  tab-size: 2;
+  letter-spacing: 0;
+  word-spacing: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  color: #1f2937;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark .code-highlight {
+  color: #f3f4f6;
+}
+
+.code-textarea.text-transparent {
+  color: transparent !important;
+  caret-color: #000;
+}
+
+.dark .code-textarea.text-transparent {
+  caret-color: #fff;
+}
+
+.code-textarea::selection {
+  background-color: rgba(59, 130, 246, 0.3);
 }
 
 .code-editor .hljs {
   background: transparent !important;
   padding: 0 !important;
+  margin: 0 !important;
 }
 </style>

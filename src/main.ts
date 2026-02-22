@@ -9,6 +9,7 @@ import App from './App.vue'
 import './style.css'
 import zhCN from './locales/zh-CN'
 import enUS from './locales/en-US'
+import { useUserStore } from './stores/user'
 
 const i18n = createI18n({
   legacy: false,
@@ -23,7 +24,6 @@ const i18n = createI18n({
 const app = createApp(App)
 const pinia = createPinia()
 
-// 注册 Element Plus 图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
@@ -32,5 +32,8 @@ app.use(pinia)
 app.use(router)
 app.use(i18n)
 app.use(ElementPlus)
+
+const userStore = useUserStore()
+userStore.initTheme()
 
 app.mount('#app')

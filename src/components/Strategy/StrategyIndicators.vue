@@ -47,7 +47,7 @@
               <el-option
                 v-for="ind in indicatorStore.indicators"
                 :key="ind.id"
-                :label="ind.name"
+                :label="`${ind.name} (ID: ${ind.id})`"
                 :value="ind.id!"
               />
             </el-select>

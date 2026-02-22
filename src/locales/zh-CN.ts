@@ -188,6 +188,14 @@ export default {
     aiGenerateWarning: '请先填写指标名称和描述',
     aiGenerateSuccess: 'AI生成指标成功',
     aiGenerateFailed: 'AI生成指标失败',
+    aiInputTooLong: '输入内容过长，请控制在1000字符以内',
+    aiNameFormatError: '指标名称格式不正确，只能包含字母、数字和下划线，且不能以数字开头',
+    aiCodeSecurityError: '生成的代码安全验证失败，代码包含不安全的操作',
+    aiNameExists: '指标名称已存在，请使用其他名称',
+    normalIndicators: '普通指标',
+    aiIndicators: 'AI指标',
+    noAiIndicators: '暂无AI指标',
+    noAiIndicatorsDesc: 'AI生成的指标将显示在这里',
   },
 
   strategyManager: {
@@ -332,6 +340,8 @@ export default {
     createBacktest: '创建回测',
     noBacktestRecords: '暂无回测记录',
     noBacktestDescription: '该策略还没有进行过回测',
+    indicatorCount: '指标数量',
+    conditionCount: '条件数量',
     timeRange: '时间范围',
     returnRate: '收益率',
     viewDetails: '查看详情',
@@ -358,7 +368,19 @@ export default {
       jValue: 'J值',
       overboughtLine: '超买线',
       oversoldLine: '超卖线'
-    }
+    },
+    aiGenerate: 'AI生成',
+    aiInputDescription: '策略描述',
+    aiInputPlaceholder: '请用自然语言描述您想要的交易策略，例如：创建一个MA交叉策略，使用MA5和MA20两条移动平均线。当MA5从下向上穿越MA20时产生买入信号，当MA5从上向下穿越MA20时产生卖出信号。',
+    aiInputRequired: '请输入策略描述',
+    aiInputTooLong: '输入内容过长，请控制在5000字符以内',
+    aiGenerateSuccess: 'AI生成策略成功',
+    aiGenerateFailed: 'AI生成策略失败',
+    aiGeneratedStrategy: 'AI生成的策略',
+    applyGenerated: '应用生成结果',
+    aiApplySuccess: '已应用AI生成的策略数据',
+    createdIndicators: '已创建的指标',
+    fees: '手续费'
   },
 
   backtest: {
@@ -439,6 +461,12 @@ export default {
     totalFees: '总手续费',
     fee: '手续费',
     netProfitLoss: '净盈亏',
+    strategyPreview: '策略预览',
+    strategyName: '策略名称',
+    positionType: '仓位类型',
+    fees: '手续费',
+    indicatorCount: '指标数量',
+    conditionCount: '条件数量'
   },
 
   profitChart: {

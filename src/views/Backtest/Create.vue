@@ -147,8 +147,8 @@
             <div>{{ $t('strategies.name') }}: {{ selectedStrategy.name }}</div>
             <div>{{ $t('strategies.positionType') }}: {{ formatPositionType(selectedStrategy.positionType) }}</div>
             <div>{{ $t('strategies.fees') }}: {{ formatPercent(selectedStrategy.buyFee) }} / {{ formatPercent(selectedStrategy.sellFee) }}</div>
-            <div>{{ $t('strategies.indicatorCount') }}: {{ selectedStrategy.indicatorCount }}</div>
-            <div>{{ $t('strategies.conditionCount') }}: {{ selectedStrategy.conditionCount }}</div>
+            <div>{{ $t('strategies.indicatorCount') }}: {{ selectedStrategy.indicators?.length || 0 }}</div>
+            <div>{{ $t('strategies.conditionCount') }}: {{ selectedStrategy.conditions?.length || 0 }}</div>
           </div>
         </div>
 

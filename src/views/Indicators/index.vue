@@ -19,14 +19,27 @@
 
     <!-- 搜索和筛选 -->
     <div class="card p-6">
-      <div class="flex flex-col sm:flex-row gap-4">
-        <div class="flex-1">
-          <el-input
-            v-model="searchQuery"
-            :placeholder="$t('common.search')"
-            :prefix-icon="Search"
-            clearable
-          />
+      <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div class="flex flex-col sm:flex-row gap-4 flex-1">
+          <div class="flex-1">
+            <el-input
+              v-model="searchQuery"
+              :placeholder="$t('common.search')"
+              :prefix-icon="Search"
+              clearable
+            />
+          </div>
+          <!-- 指标类型切换 -->
+          <el-radio-group v-model="indicatorType" size="default">
+            <el-radio-button value="normal">
+              {{ $t('indicators.normalIndicators') }}
+              <el-badge :value="normalIndicatorsCount" type="primary" class="ml-1" />
+            </el-radio-button>
+            <el-radio-button value="ai">
+              {{ $t('indicators.aiIndicators') }}
+              <el-badge :value="aiIndicatorsCount" type="success" class="ml-1" />
+            </el-radio-button>
+          </el-radio-group>
         </div>
         <el-button @click="resetFilters">
           {{ $t('common.reset') }}
@@ -42,9 +55,9 @@
 
       <div v-else-if="!filteredIndicators || filteredIndicators.length === 0" class="p-6">
         <EmptyState
-          title="{{ $t('indicators.emptyTitle') }}"
-          description="{{ $t('indicators.emptyDescription') }}"
-          action-text="{{ $t('indicators.create') }}"
+          :title="indicatorType === 'ai' ? $t('indicators.noAiIndicators') : $t('indicators.noDataTitle')"
+          :description="indicatorType === 'ai' ? $t('indicators.noAiIndicatorsDesc') : $t('indicators.noDataDescription')"
+          :action-text="$t('indicators.create')"
           @action="$router.push('/indicators/create')"
         />
       </div>
@@ -73,8 +86,13 @@
           <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             <tr v-for="indicator in filteredIndicators" :key="indicator.id">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ indicator.name }}
+                <div class="flex items-center gap-2">
+                  <el-tag v-if="isAIIndicator(indicator.name)" type="success" size="small" effect="dark">
+                    AI
+                  </el-tag>
+                  <span class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ indicator.name }}
+                  </span>
                 </div>
               </td>
               <td class="px-6 py-4">
@@ -125,13 +143,34 @@ import type { Indicator } from '@/types'
 import { useI18n } from 'vue-i18n'
 
 const indicatorStore = useIndicatorStore()
-const { t: $t } = useI18n()
+const { t } = useI18n()
 
 const searchQuery = ref('')
+const indicatorType = ref<'normal' | 'ai'>('normal')
+
+const isAIIndicator = (name: string): boolean => {
+  return name.startsWith('AI_')
+}
+
+const normalIndicatorsCount = computed(() => {
+  return indicatorStore.indicators.filter(i => !isAIIndicator(i.name)).length
+})
+
+const aiIndicatorsCount = computed(() => {
+  return indicatorStore.indicators.filter(i => isAIIndicator(i.name)).length
+})
 
 const filteredIndicators = computed(() => {
   let indicators = indicatorStore.indicators
   
+  // 根据类型筛选
+  if (indicatorType.value === 'ai') {
+    indicators = indicators.filter(i => isAIIndicator(i.name))
+  } else {
+    indicators = indicators.filter(i => !isAIIndicator(i.name))
+  }
+  
+  // 根据搜索词筛选
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     indicators = indicators.filter(indicator =>
@@ -145,12 +184,13 @@ const filteredIndicators = computed(() => {
 
 const resetFilters = () => {
   searchQuery.value = ''
+  indicatorType.value = 'normal'
 }
 
 const handleDelete = async (indicator: Indicator) => {
   try {
     await ElMessageBox.confirm(
-      t('indicators.deleteConfirm', { name: indicator.name }),
+      t('indicators.confirmDeleteMessage', { name: indicator.name }),
       t('common.confirmDelete'),
       {
         confirmButtonText: t('common.delete'),

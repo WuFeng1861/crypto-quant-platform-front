@@ -135,6 +135,10 @@ export default {
     aiGenerateWarning: 'Please fill in indicator name and description first',
     aiGenerateSuccess: 'AI generated indicator successfully',
     aiGenerateFailed: 'AI failed to generate indicator',
+    aiInputTooLong: 'Input too long, please keep within 1000 characters',
+    aiNameFormatError: 'Invalid indicator name format. Only letters, numbers and underscores are allowed, and cannot start with a number',
+    aiCodeSecurityError: 'Generated code security validation failed: code contains unsafe operations',
+    aiNameExists: 'Indicator name already exists, please use a different name',
     addParameter: 'Add Parameter',
     removeParameter: 'Remove Parameter',
     calculate: 'Calculate',
@@ -158,7 +162,11 @@ export default {
       number: 'Number',
       string: 'String',
       boolean: 'Boolean'
-    }
+    },
+    normalIndicators: 'Normal Indicators',
+    aiIndicators: 'AI Indicators',
+    noAiIndicators: 'No AI Indicators',
+    noAiIndicatorsDesc: 'AI-generated indicators will be displayed here'
   },
 
   strategies: {
@@ -283,6 +291,8 @@ export default {
     createBacktest: 'Create Backtest',
     noBacktestRecords: 'No backtest records',
     noBacktestDescription: 'This strategy has not been backtested yet',
+    indicatorCount: 'Indicator Count',
+    conditionCount: 'Condition Count',
     timeRange: 'Time Range',
     returnRate: 'Return Rate',
     viewDetails: 'View Details',
@@ -306,7 +316,19 @@ export default {
       jValue: 'J Value',
       overboughtLine: 'Overbought Line',
       oversoldLine: 'Oversold Line'
-    }
+    },
+    aiGenerate: 'AI Generate',
+    aiInputDescription: 'Strategy Description',
+    aiInputPlaceholder: 'Describe your trading strategy in natural language, e.g.: Create an MA crossover strategy using MA5 and MA20 moving averages. Generate a buy signal when MA5 crosses above MA20, and a sell signal when MA5 crosses below MA20.',
+    aiInputRequired: 'Please enter strategy description',
+    aiInputTooLong: 'Input too long, please keep within 5000 characters',
+    aiGenerateSuccess: 'AI generated strategy successfully',
+    aiGenerateFailed: 'AI failed to generate strategy',
+    aiGeneratedStrategy: 'AI Generated Strategy',
+    applyGenerated: 'Apply Generated Result',
+    aiApplySuccess: 'Applied AI generated strategy data',
+    createdIndicators: 'Created Indicators',
+    fees: 'Fees'
   },
 
   backtest: {
@@ -357,7 +379,13 @@ export default {
       pnl: 'P&L'
     },
     cumulativeProfitLoss: 'Cumulative Profit/Loss',
-    bullet: '● '
+    bullet: '● ',
+    strategyPreview: 'Strategy Preview',
+    strategyName: 'Strategy Name',
+    positionType: 'Position Type',
+    fees: 'Fees',
+    indicatorCount: 'Indicator Count',
+    conditionCount: 'Condition Count'
   },
 
   tradingPairs: {

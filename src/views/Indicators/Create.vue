@@ -233,23 +233,18 @@ const generateIndicator = async () => {
 
   aiLoading.value = true
   try {
-    // 构建用户输入，使用指定模板
     const userInput = `创建一个${form.description}的${form.name}的指标`
     
     const response = await aiIndicatorApi.generate({ userInput })
     
     if (response.success && response.generatedCode) {
-      // 填充生成的代码
       form.calculationCode = response.generatedCode.code
-      
-      // 清空现有参数
       form.parameters = []
       
-      // 添加生成的参数
       response.generatedCode.parameters.forEach((param: any) => {
         form.parameters.push({
           name: param.name,
-          paramType: param.type,
+          paramType: param.paramType,
           defaultValue: param.defaultValue,
           description: param.description
         })
@@ -261,9 +256,30 @@ const generateIndicator = async () => {
     }
   } catch (error: any) {
     console.error('AI生成指标失败:', error)
-    ElMessage.error(error.response?.data?.message || t('indicators.aiGenerateFailed'))
+    handleAIError(error)
   } finally {
     aiLoading.value = false
+  }
+}
+
+const handleAIError = (error: any) => {
+  const status = error.response?.status
+  const message = error.response?.data?.message
+  
+  if (status === 400) {
+    if (message?.includes('过长')) {
+      ElMessage.error(t('indicators.aiInputTooLong'))
+    } else if (message?.includes('名称') || message?.includes('name')) {
+      ElMessage.error(t('indicators.aiNameFormatError'))
+    } else if (message?.includes('安全') || message?.includes('unsafe')) {
+      ElMessage.error(t('indicators.aiCodeSecurityError'))
+    } else {
+      ElMessage.error(message || t('indicators.aiGenerateFailed'))
+    }
+  } else if (status === 409) {
+    ElMessage.error(t('indicators.aiNameExists'))
+  } else {
+    ElMessage.error(message || t('indicators.aiGenerateFailed'))
   }
 }
 
