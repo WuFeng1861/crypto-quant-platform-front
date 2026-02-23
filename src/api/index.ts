@@ -4,8 +4,8 @@ import type { ApiResponse } from '@/types'
 
 // 创建 axios 实例
 const api: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:3099',
-  // baseURL: 'https://quant.wufeng98.cn/api',
+  // baseURL: 'http://localhost:3099',
+  baseURL: 'https://quant.wufeng98.cn/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
