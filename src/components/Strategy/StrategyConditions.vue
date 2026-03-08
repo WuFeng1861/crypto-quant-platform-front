@@ -135,15 +135,23 @@
         <template v-if="condition.conditionType === 'custom'">
           <div class="mb-4 info-box info-box-yellow">
             <h5 class="info-box-title info-box-title-yellow">{{ $t('strategies.customCodeTitle') }}</h5>
-            <p class="info-box-text info-box-text-yellow mb-1">
-              • {{ $t('strategies.customCodeTip1') }}
+            <p class="info-box-text info-box-text-yellow mb-3">
+              {{ $t('strategies.customCodeDesc') }}
             </p>
-            <p class="info-box-text info-box-text-yellow mb-1">
-              • {{ $t('strategies.customCodeTip2') }}
-            </p>
-            <p class="info-box-text info-box-text-yellow">
-              • {{ $t('strategies.customCodeTip3') }}
-            </p>
+            
+            <div v-for="(section, key) in $tm('strategies.customCodeSections')" :key="key" class="mb-3">
+              <template v-if="typeof section === 'object' && section.title">
+                <h6 class="text-xs font-bold theme-text-primary mb-1">{{ section.title }}</h6>
+                <ul class="list-disc list-inside space-y-1">
+                  <li v-for="(item, idx) in section.items" :key="idx" class="info-box-text info-box-text-yellow text-xs">
+                    {{ item }}
+                  </li>
+                </ul>
+              </template>
+              <p v-else-if="key === 'result'" class="info-box-text info-box-text-yellow font-medium mt-2">
+                • {{ section }}
+              </p>
+            </div>
           </div>
 
           <div class="mt-4">

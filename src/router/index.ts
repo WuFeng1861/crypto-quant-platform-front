@@ -33,6 +33,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'indicators.detail' }
       },
       {
+        path: '/indicators/edit/:id',
+        name: 'EditIndicator',
+        component: () => import('@/views/Indicators/Edit.vue'),
+        meta: { title: 'indicators.edit' }
+      },
+      {
         path: '/strategies',
         name: 'Strategies',
         component: () => import('@/views/Strategies/index.vue'),

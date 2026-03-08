@@ -23,7 +23,7 @@ export const indicatorApi = {
 
   // 更新指标
   update(id: number, data: Partial<Indicator>): Promise<Indicator> {
-    return api.put(`/indicators/${id}`, data)
+    return api.patch(`/indicators/${id}`, data)
   },
 
   // 删除指标

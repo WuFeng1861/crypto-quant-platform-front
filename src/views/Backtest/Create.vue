@@ -19,26 +19,11 @@
 
     <!-- 创建表单 -->
     <div class="card p-6">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="120px"
-        @submit.prevent="handleSubmit"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" @submit.prevent="handleSubmit">
         <el-form-item :label="$t('backtest.selectStrategy')" prop="strategyId">
-          <el-select
-            v-model="form.strategyId"
-            placeholder="选择策略"
-            class="w-full"
-            filterable
-          >
-            <el-option
-              v-for="strategy in strategyStore.strategies"
-              :key="strategy.id"
-              :label="strategy.name"
-              :value="strategy.id!"
-            >
+          <el-select v-model="form.strategyId" placeholder="选择策略" class="w-full" filterable>
+            <el-option v-for="strategy in strategyStore.strategies" :key="strategy.id" :label="strategy.name"
+              :value="strategy.id!">
               <div class="flex items-center justify-between">
                 <span>{{ strategy.name }}</span>
                 <span class="text-xs text-gray-500">
@@ -50,91 +35,44 @@
         </el-form-item>
 
         <el-form-item :label="$t('backtest.selectTradingPair')" prop="pairId">
-          <el-select
-            v-model="form.pairId"
-            placeholder="选择交易对"
-            class="w-full"
-            filterable
-          >
-            <el-option
-              v-for="pair in priceDataStore.tradingPairs"
-              :key="pair.id"
-              :label="pair.symbol"
-              :value="pair.id"
-            />
+          <el-select v-model="form.pairId" placeholder="选择交易对" class="w-full" filterable>
+            <el-option v-for="pair in priceDataStore.tradingPairs" :key="pair.id" :label="pair.symbol"
+              :value="pair.id" />
           </el-select>
         </el-form-item>
 
         <el-form-item :label="$t('backtest.selectTimeframe')" prop="timeframeId">
-          <el-select
-            v-model="form.timeframeId"
-            placeholder="选择时间框架"
-            class="w-full"
-          >
-            <el-option
-              v-for="timeframe in priceDataStore.timeframes"
-              :key="timeframe.id"
-              :label="timeframe.name"
-              :value="timeframe.id"
-            />
+          <el-select v-model="form.timeframeId" placeholder="选择时间框架" class="w-full">
+            <el-option v-for="timeframe in priceDataStore.timeframes" :key="timeframe.id" :label="timeframe.name"
+              :value="timeframe.id" />
           </el-select>
         </el-form-item>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <el-form-item :label="$t('backtest.startTime')" prop="startTime">
-            <el-date-picker
-              v-model="form.startTime"
-              type="datetime"
-              :placeholder="$t('backtest.selectStartTime')"
-              class="w-full"
-              format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
-            />
+            <el-date-picker v-model="form.startTime" type="datetime" :placeholder="$t('backtest.selectStartTime')"
+              class="w-full" format="YYYY-MM-DD HH:mm:ss" value-format="YYYY-MM-DD HH:mm:ss" />
           </el-form-item>
 
           <el-form-item :label="$t('backtest.endTime')" prop="endTime">
-            <el-date-picker
-              v-model="form.endTime"
-              type="datetime"
-              :placeholder="$t('backtest.selectEndTime')"
-              class="w-full"
-              format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
-            />
+            <el-date-picker v-model="form.endTime" type="datetime" :placeholder="$t('backtest.selectEndTime')"
+              class="w-full" format="YYYY-MM-DD HH:mm:ss" value-format="YYYY-MM-DD HH:mm:ss" />
           </el-form-item>
         </div>
 
         <el-form-item :label="$t('backtest.initialCapital')" prop="initialCapital">
-          <el-input-number
-            v-model="form.initialCapital"
-            :min="1000"
-            :max="10000000"
-            :step="1000"
-            class="w-full"
-          />
+          <el-input-number v-model="form.initialCapital" :min="1000" :max="10000000" :step="1000" class="w-full" />
         </el-form-item>
 
         <el-form-item :label="$t('backtest.earlyStopThreshold')" prop="earlyStopThreshold">
-          <el-input-number
-            v-model="form.earlyStopThreshold"
-            :min="1"
-            :max="50"
-            :step="1"
-            class="w-full"
-          />
+          <el-input-number v-model="form.earlyStopThreshold" :min="1" :max="50" :step="1" class="w-full" />
           <div class="text-xs text-gray-500 mt-1">
             {{ $t('backtest.earlyStopThresholdHelp') }}
           </div>
         </el-form-item>
 
         <el-form-item :label="$t('backtest.positionDivision')" prop="positionDivision">
-          <el-input-number
-            v-model="form.positionDivision"
-            :min="1"
-            :max="10"
-            :step="1"
-            class="w-full"
-          />
+          <el-input-number v-model="form.positionDivision" :min="1" :max="99999999" :step="1" class="w-full" />
           <div class="text-xs text-gray-500 mt-1">
             {{ $t('backtest.positionDivisionHelp') }}
           </div>
@@ -146,7 +84,8 @@
           <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
             <div>{{ $t('strategies.name') }}: {{ selectedStrategy.name }}</div>
             <div>{{ $t('strategies.positionType') }}: {{ formatPositionType(selectedStrategy.positionType) }}</div>
-            <div>{{ $t('strategies.fees') }}: {{ formatPercent(selectedStrategy.buyFee) }} / {{ formatPercent(selectedStrategy.sellFee) }}</div>
+            <div>{{ $t('strategies.fees') }}: {{ formatPercent(selectedStrategy.buyFee) }} / {{
+              formatPercent(selectedStrategy.sellFee) }}</div>
             <div>{{ $t('strategies.indicatorCount') }}: {{ selectedStrategy.indicators?.length || 0 }}</div>
             <div>{{ $t('strategies.conditionCount') }}: {{ selectedStrategy.conditions?.length || 0 }}</div>
           </div>
@@ -154,11 +93,7 @@
 
         <el-form-item class="mt-6">
           <div class="flex space-x-4">
-            <el-button
-              type="primary"
-              @click="handleSubmit"
-              :loading="loading"
-            >
+            <el-button type="primary" @click="handleSubmit" :loading="loading">
               {{ $t('common.create') }}
             </el-button>
             <el-button @click="resetForm">
@@ -235,19 +170,19 @@ const resetForm = () => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
-    
+
     // 验证时间范围
     if (new Date(form.endTime) <= new Date(form.startTime)) {
       ElMessage.error($t('backtest.endTimeMustBeLater'))
       return
     }
-    
+
     loading.value = true
     const result = await backtestStore.createBacktest(form)
-    
+
     if (result.success) {
       ElMessage.success($t('backtest.createSuccess'))
       router.push('/backtest')
@@ -268,12 +203,12 @@ onMounted(async () => {
     priceDataStore.fetchTradingPairs(),
     priceDataStore.fetchTimeframes()
   ])
-  
+
   // Set default time range (last 30 days)
   const endDate = new Date()
   const startDate = new Date()
   startDate.setDate(startDate.getDate() - 30)
-  
+
   form.endTime = endDate.toISOString().slice(0, 19).replace('T', ' ')
   form.startTime = startDate.toISOString().slice(0, 19).replace('T', ' ')
 })

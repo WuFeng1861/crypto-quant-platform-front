@@ -75,78 +75,108 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {{ $t('common.parameters') }}
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ $t('common.createdAt') }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {{ $t('common.actions') }}
               </th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="indicator in filteredIndicators" :key="indicator.id">
+            <tr v-for="indicator in filteredIndicators" :key="indicator.id" class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center gap-2">
-                  <el-tag v-if="isAIIndicator(indicator.name)" type="success" size="small" effect="dark">
-                    AI
-                  </el-tag>
-                  <span class="text-sm font-medium text-gray-900 dark:text-white">
+                <div class="flex items-center">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">
                     {{ indicator.name }}
-                  </span>
+                  </div>
+                  <el-tag v-if="isAIIndicator(indicator.name)" size="small" type="warning" class="ml-2">AI</el-tag>
                 </div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
+                <div class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 max-w-xs">
                   {{ indicator.description || '-' }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                  {{ indicator.parameters?.length || 0 }} {{ $t('common.parameters') }}
-                </span>
+                <div class="flex flex-wrap gap-1">
+                  <el-tag
+                    v-for="param in indicator.parameters"
+                    :key="param.name"
+                    size="small"
+                    type="info"
+                    class="mr-1 mb-1"
+                  >
+                    {{ param.name }}: {{ param.defaultValue || '-' }}
+                  </el-tag>
+                  <span v-if="!indicator.parameters || indicator.parameters.length === 0" class="text-xs text-gray-400">
+                    {{ $t('common.none') }}
+                  </span>
+                </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                {{ formatTime(indicator.createdAt!) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                <router-link :to="`/indicators/${indicator.id}`">
-                  <el-button size="small" type="primary" link>
-                    {{ $t('common.view') }}
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex justify-end space-x-2">
+                  <router-link :to="`/indicators/${indicator.id}`">
+                    <el-button size="small" :icon="View">
+                      {{ $t('common.view') }}
+                    </el-button>
+                  </router-link>
+                  <el-button size="small" type="primary" :icon="Edit" @click="handleEdit(indicator)">
+                    {{ $t('common.edit') }}
                   </el-button>
-                </router-link>
-                <el-button
-                  size="small"
-                  type="danger"
-                  link
-                  @click="handleDelete(indicator)"
-                >
-                  {{ $t('common.delete') }}
-                </el-button>
+                  <el-button size="small" type="success" :icon="CopyDocument" @click="handleCopy(indicator)">
+                    {{ $t('common.copy') }}
+                  </el-button>
+                  <el-button size="small" type="danger" :icon="Delete" @click="handleDelete(indicator)">
+                    {{ $t('common.delete') }}
+                  </el-button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <!-- 复制指标对话框 -->
+    <el-dialog
+      v-model="showCopyDialog"
+      :title="$t('indicators.copyIndicator')"
+      width="400px"
+    >
+      <el-form label-position="top">
+        <el-form-item :label="$t('indicators.newIndicatorName')">
+          <el-input v-model="newIndicatorName" :placeholder="$t('indicators.inputNewIndicatorName')" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="flex justify-end space-x-2">
+          <el-button @click="showCopyDialog = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" :loading="copyLoading" @click="confirmCopy">{{ $t('common.confirm') }}</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { ElMessageBox, ElMessage } from 'element-plus'
 import { useIndicatorStore } from '@/stores/indicators'
-import { formatTime } from '@/utils/format'
+import { useI18n } from 'vue-i18n'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus, Search, View, Edit, Delete, CopyDocument } from '@element-plus/icons-vue'
 import LoadingSpinner from '@/components/Common/LoadingSpinner.vue'
 import EmptyState from '@/components/Common/EmptyState.vue'
-import { Plus, Search } from '@element-plus/icons-vue'
 import type { Indicator } from '@/types'
-import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const indicatorStore = useIndicatorStore()
 const { t } = useI18n()
+const router = useRouter()
 
 const searchQuery = ref('')
 const indicatorType = ref<'normal' | 'ai'>('normal')
+const showCopyDialog = ref(false)
+const newIndicatorName = ref('')
+const copyLoading = ref(false)
+const currentIndicator = ref<Indicator | null>(null)
 
 const isAIIndicator = (name: string): boolean => {
   return name.startsWith('AI_')
@@ -187,6 +217,40 @@ const resetFilters = () => {
   indicatorType.value = 'normal'
 }
 
+const handleEdit = (indicator: Indicator) => {
+  router.push(`/indicators/edit/${indicator.id}`)
+}
+
+const handleCopy = (indicator: Indicator) => {
+  currentIndicator.value = indicator
+  newIndicatorName.value = `${indicator.name}_Copy`
+  showCopyDialog.value = true
+}
+
+const confirmCopy = async () => {
+  if (!newIndicatorName.value.trim()) {
+    ElMessage.warning(t('indicators.inputNewIndicatorName'))
+    return
+  }
+
+  if (indicatorStore.indicators.some(i => i.name === newIndicatorName.value)) {
+    ElMessage.warning(t('indicators.indicatorNameExists'))
+    return
+  }
+
+  copyLoading.value = true
+  try {
+    await indicatorStore.copyIndicator(currentIndicator.value!.id!, newIndicatorName.value)
+    ElMessage.success(t('indicators.copySuccess'))
+    showCopyDialog.value = false
+  } catch (error) {
+    console.error('复制指标失败:', error)
+    ElMessage.error(t('indicators.copyFailed'))
+  } finally {
+    copyLoading.value = false
+  }
+}
+
 const handleDelete = async (indicator: Indicator) => {
   try {
     await ElMessageBox.confirm(
@@ -203,12 +267,15 @@ const handleDelete = async (indicator: Indicator) => {
     ElMessage.success(t('indicators.deleteSuccess'))
   } catch (error) {
     if (error !== 'cancel') {
+      console.error('删除指标失败:', error)
       ElMessage.error(t('indicators.deleteFailed'))
     }
   }
 }
 
-onMounted(() => {
-  indicatorStore.fetchIndicators()
+onMounted(async () => {
+  if (indicatorStore.indicators.length === 0) {
+    await indicatorStore.fetchIndicators()
+  }
 })
 </script>

@@ -166,7 +166,17 @@ export default {
     normalIndicators: 'Normal Indicators',
     aiIndicators: 'AI Indicators',
     noAiIndicators: 'No AI Indicators',
-    noAiIndicatorsDesc: 'AI-generated indicators will be displayed here'
+    noAiIndicatorsDesc: 'AI-generated indicators will be displayed here',
+    editSubtitle: 'Modify an existing technical indicator',
+    fetchDetailFailed: 'Failed to fetch indicator details',
+    updateSuccess: 'Indicator updated successfully',
+    updateFailed: 'Failed to update indicator',
+    copyIndicator: 'Copy Indicator',
+    newIndicatorName: 'New Indicator Name',
+    inputNewIndicatorName: 'Please enter a new indicator name',
+    indicatorNameExists: 'Indicator name already exists',
+    copySuccess: 'Indicator copied successfully',
+    copyFailed: 'Failed to copy indicator'
   },
 
   strategies: {
@@ -219,10 +229,45 @@ export default {
     selectAction: 'Select Action',
     groupNumber: 'Group Number',
     inputConstantValue: 'Input Constant Value',
-    customCodeTitle: 'Custom Code Description',
-    customCodeTip1: 'Use JavaScript to write custom trading condition logic',
-    customCodeTip2: 'Available variables: indicators (indicator array), price (current price), volume (trading volume)',
-    customCodeTip3: 'Return true if condition is met, false if condition is not met',
+    customCodeTitle: 'Custom Code Instructions',
+    customCodeDesc: 'When writing custom code (customCode) in strategy trading conditions, the system injects a complete execution context. Here are the variables you can use and their detailed usage:',
+    customCodeSections: {
+      indicators: {
+        title: '1. Indicator Data',
+        items: [
+          'indicatorValues: 2D array storing calculation results of all indicators in the strategy. Usage: indicatorValues[indicatorIndex][timePointIndex]',
+          'index: Current K-line index in the backtest (starting from 0). Usage: Typically used as an index for indicatorValues or priceData'
+        ]
+      },
+      price: {
+        title: '2. Price Data',
+        items: [
+          'current: K-line data object for the current moment. Properties: current.openPrice, current.closePrice, current.highPrice, current.lowPrice, current.volume',
+          'previous: K-line data object for the previous moment (null if it is the first K-line)',
+          'priceData: K-line array for the entire backtest period. Usage: priceData[index - 5] to get price data from 5 K-lines ago'
+        ]
+      },
+      account: {
+        title: '3. Account & Position Status',
+        items: [
+          'position: Current holding quantity. Value: > 0 for long, < 0 for short, 0 for no position',
+          'entryPrice: Average entry price of the current position (0 if no position)',
+          'balance: Current cash balance of the account',
+          'hasPosition: Boolean, whether there is a current position (equivalent to position !== 0)',
+          'isLong / isShort: Boolean, to determine the direction of the current position'
+        ]
+      },
+      tools: {
+        title: '4. Tool Classes & Functions',
+        items: [
+          'BigNumber: High-precision calculation class, recommended for financial calculations. Example: new BigNumber(balance).multipliedBy(0.5)',
+          'Math: Native JavaScript math object. Example: Math.abs(position), Math.max(a, b)',
+          'average(arr): Helper function, calculates the average value of an array',
+          'standardDeviation(arr): Helper function, calculates the standard deviation of an array'
+        ]
+      },
+      result: 'Return true if the condition is met, false otherwise'
+    },
     customCodeLabel: 'Custom Code',
     positionTypes: {
       long: 'Long',

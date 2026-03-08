@@ -46,27 +46,59 @@ export const useIndicatorStore = defineStore('indicators', {
     },
 
     async createIndicator(data: Omit<Indicator, 'id' | 'createdAt' | 'updatedAt'>) {
+      this.loading = true
       try {
-        const newIndicator = await indicatorApi.create(data)
-        this.indicators.push(newIndicator)
-        return newIndicator
+        const indicator = await indicatorApi.create(data)
+        this.indicators.push(indicator)
+        return indicator
       } catch (error) {
         console.error('创建指标失败:', error)
         throw error
+      } finally {
+        this.loading = false
       }
     },
 
     async updateIndicator(id: number, data: Partial<Indicator>) {
+      this.loading = true
       try {
-        const updatedIndicator = await indicatorApi.update(id, data)
-        const index = this.indicators.findIndex(indicator => indicator.id === id)
+        const indicator = await indicatorApi.update(id, data)
+        const index = this.indicators.findIndex(i => i.id === id)
         if (index !== -1) {
-          this.indicators[index] = updatedIndicator
+          this.indicators[index] = indicator
         }
-        return updatedIndicator
+        return indicator
       } catch (error) {
         console.error('更新指标失败:', error)
         throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async copyIndicator(id: number, newName: string) {
+      this.loading = true
+      try {
+        const original = await indicatorApi.getById(id)
+        const { id: _, createdAt: __, updatedAt: ___, ...copyData } = original
+        copyData.name = newName
+        
+        // 如果是复制指标，参数也需要复制（不带ID）
+        if (copyData.parameters) {
+          copyData.parameters = copyData.parameters.map(p => {
+            const { id: ____, indicatorId: _____, createdAt: ______, updatedAt: _______, ...paramData } = p as any
+            return paramData
+          })
+        }
+
+        const indicator = await indicatorApi.create(copyData)
+        this.indicators.push(indicator)
+        return indicator
+      } catch (error) {
+        console.error('复制指标失败:', error)
+        throw error
+      } finally {
+        this.loading = false
       }
     },
 

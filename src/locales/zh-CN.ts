@@ -196,6 +196,17 @@ export default {
     aiIndicators: 'AI指标',
     noAiIndicators: '暂无AI指标',
     noAiIndicatorsDesc: 'AI生成的指标将显示在这里',
+    edit: '编辑指标',
+    editSubtitle: '修改已有的技术指标',
+    fetchDetailFailed: '获取指标详情失败',
+    updateSuccess: '指标更新成功',
+    updateFailed: '更新指标失败',
+    copyIndicator: '复制指标',
+    newIndicatorName: '新指标名称',
+    inputNewIndicatorName: '请输入新指标名称',
+    indicatorNameExists: '指标名称已存在',
+    copySuccess: '指标复制成功',
+    copyFailed: '复制指标失败',
   },
 
   strategyManager: {
@@ -269,9 +280,44 @@ export default {
     groupNumber: '分组编号',
     inputConstantValue: '输入常量值',
     customCodeTitle: '自定义代码说明',
-    customCodeTip1: '使用 JavaScript 编写自定义交易条件逻辑',
-    customCodeTip2: '可访问变量：indicators（指标数组）、price（当前价格）、volume（成交量）',
-    customCodeTip3: '返回 true 表示条件满足，false 表示条件不满足',
+    customCodeDesc: '在策略的交易条件中编写自定义代码（customCode）时，系统会为您注入一个完整的执行上下文。以下是您可以使用的变量及其详细用法：',
+    customCodeSections: {
+      indicators: {
+        title: '1. 指标数据 (Indicator Data)',
+        items: [
+          'indicatorValues: 二维数组，存储了策略中所有指标的计算结果。用法：indicatorValues[指标索引][时间点索引]',
+          'index: 当前回测进行到的 K 线索引（从 0 开始）。用法：通常作为 indicatorValues 或 priceData 的下标'
+        ]
+      },
+      price: {
+        title: '2. 价格数据 (Price Data)',
+        items: [
+          'current: 当前时刻的 K 线数据对象。属性：current.openPrice, current.closePrice, current.highPrice, current.lowPrice, current.volume',
+          'previous: 上一个时刻的 K 线数据对象（如果是第一根 K 线则为 null）',
+          'priceData: 整个回测时间段的 K 线数组。用法：priceData[index - 5] 获取 5 根 K 线前的价格数据'
+        ]
+      },
+      account: {
+        title: '3. 账户与持仓状态 (Account & Position)',
+        items: [
+          'position: 当前持仓数量。数值：> 0 代表多头，< 0 代表空头，0 代表空仓',
+          'entryPrice: 当前持仓的平均入场价格（无持仓时为 0）',
+          'balance: 账户当前的现金余额',
+          'hasPosition: 布尔值，当前是否有持仓（等同于 position !== 0）',
+          'isLong / isShort: 布尔值，判断当前持仓方向'
+        ]
+      },
+      tools: {
+        title: '4. 工具类与函数',
+        items: [
+          'BigNumber: 高精度计算类，建议涉及金额计算时使用。示例：new BigNumber(balance).multipliedBy(0.5)',
+          'Math: 原生 JavaScript 数学对象。示例：Math.abs(position), Math.max(a, b)',
+          'average(arr): 辅助函数，计算数组平均值',
+          'standardDeviation(arr): 辅助函数，计算数组标准差'
+        ]
+      },
+      result: '返回 true 表示条件满足，false 表示条件不满足'
+    },
     customCodeLabel: '自定义代码',
     positionTypes: {
       long: '做多',
